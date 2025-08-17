@@ -1,46 +1,173 @@
-# Getting Started with Create React App
+# Todo Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+یک اپلیکیشن مدیریت وظایف پیشرفته ساخته شده با React، TypeScript و Tailwind CSS.
 
-## Available Scripts
+## ویژگی‌ها
 
-In the project directory, you can run:
+### ✨ عملکردهای اصلی
+- **مشاهده Todos**: نمایش لیست Todos از API
+- **افزودن Todo**: فرم اعتبارسنجی شده با Zod
+- **حذف Todo**: با تأیید کاربر
+- **تغییر وضعیت**: علامت‌گذاری به عنوان تکمیل شده/ناتمام
+- **Drag & Drop**: تغییر ترتیب Todos
 
-### `npm start`
+### 🎨 ویژگی‌های اضافی
+- **فیلتر کردن**: بر اساس وضعیت (همه، تکمیل شده، ناتمام)
+- **جستجو**: جستجو در متن Todos
+- **نوار پیشرفت**: نمایش درصد تکمیل
+- **انیمیشن‌ها**: انیمیشن‌های نرم و زیبا
+- **طراحی واکنش‌گرا**: سازگار با تمام دستگاه‌ها
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## تکنولوژی‌های استفاده شده
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Frontend
+- **React 19** - کتابخانه UI
+- **TypeScript** - تایپ‌های ایمن
+- **Tailwind CSS** - فریم‌ورک CSS
+- **Redux Toolkit** - مدیریت state
+- **React Query** - مدیریت داده‌ها و کش
 
-### `npm test`
+### Backend Integration
+- **DummyJSON API** - API تست
+- **Fetch API** - درخواست‌های HTTP
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Validation & Error Handling
+- **Zod** - اعتبارسنجی schema
+- **Error Boundaries** - مدیریت خطاها
+- **Toast Notifications** - اعلان‌های کاربر
 
-### `npm run build`
+## ساختار پروژه
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+src/
+├── components/          # کامپوننت‌های UI
+│   ├── TodoApp.tsx     # کامپوننت اصلی
+│   ├── TodoItem.tsx    # آیتم Todo
+│   ├── TodoList.tsx    # لیست Todos
+│   ├── AddTodoForm.tsx # فرم افزودن
+│   ├── TodoFilters.tsx # فیلترها
+│   └── ErrorBoundary.tsx # مدیریت خطا
+├── services/           # سرویس‌ها (MVC)
+│   ├── apiProxy.ts     # ماژول API
+│   ├── mapper.ts       # تبدیل داده‌ها
+│   └── todoService.ts  # سرویس Todo
+├── store/              # Redux Store
+│   ├── store.ts        # تنظیمات Store
+│   └── todoSlice.ts    # Slice Todo
+├── types/              # تعاریف TypeScript
+│   ├── todo.ts         # انواع Todo
+│   └── validation.ts   # Schema های Zod
+├── hooks/              # Custom Hooks
+│   ├── useAppDispatch.ts
+│   └── useAppSelector.ts
+└── utils/              # توابع کمکی
+    └── todoUtils.ts    # توابع Todo
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## معماری MVC
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+این پروژه از الگوی MVC استفاده می‌کند:
 
-### `npm run eject`
+### Model
+- **Types**: تعاریف TypeScript
+- **Validation**: Schema های Zod
+- **Store**: Redux state management
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### View
+- **Components**: کامپوننت‌های React
+- **UI**: Tailwind CSS styling
+- **Layout**: Responsive design
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Controller
+- **Services**: منطق کسب و کار
+- **API Proxy**: مدیریت درخواست‌ها
+- **Hooks**: Custom React hooks
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## نصب و اجرا
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### پیش‌نیازها
+- Node.js (نسخه 16 یا بالاتر)
+- npm یا yarn
 
-## Learn More
+### نصب وابستگی‌ها
+```bash
+npm install
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### اجرای پروژه
+```bash
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### ساخت نسخه تولید
+```bash
+npm run build
+```
+
+### اجرای تست‌ها
+```bash
+npm test
+```
+
+## API Endpoints
+
+- `GET /todos` - دریافت همه Todos
+- `POST /todos/add` - افزودن Todo جدید
+- `PUT /todos/{id}` - به‌روزرسانی Todo
+- `DELETE /todos/{id}` - حذف Todo
+
+## ویژگی‌های UI/UX
+
+### طراحی مدرن
+- رنگ‌بندی زیبا و هماهنگ
+- انیمیشن‌های نرم
+- آیکون‌های SVG
+- فونت‌های خوانا
+
+### تجربه کاربری
+- Drag & Drop آسان
+- فیلترهای سریع
+- جستجوی لحظه‌ای
+- بازخورد بصری
+
+### واکنش‌گرایی
+- سازگار با موبایل
+- طراحی تطبیقی
+- Touch-friendly
+- Keyboard navigation
+
+## مدیریت خطا
+
+- **Error Boundaries**: مدیریت خطاهای React
+- **API Error Handling**: مدیریت خطاهای شبکه
+- **Validation Errors**: نمایش خطاهای اعتبارسنجی
+- **User Feedback**: پیام‌های خطای واضح
+
+## عملکرد
+
+- **React Query**: کش هوشمند
+- **Optimistic Updates**: به‌روزرسانی فوری UI
+- **Lazy Loading**: بارگذاری بهینه
+- **Debounced Search**: جستجوی بهینه
+
+## تست
+
+- **Unit Tests**: تست کامپوننت‌ها
+- **Integration Tests**: تست سرویس‌ها
+- **E2E Tests**: تست کامل کاربری
+
+## مشارکت
+
+1. Fork کنید
+2. Branch جدید ایجاد کنید
+3. تغییرات را commit کنید
+4. Push کنید
+5. Pull Request ایجاد کنید
+
+## لایسنس
+
+MIT License
+
+## نویسنده
+
+ساخته شده با ❤️ و React + TypeScript
