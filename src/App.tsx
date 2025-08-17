@@ -18,12 +18,14 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <TodoApp />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </Provider>
+    <div className="App">
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <TodoApp />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </Provider>
+    </div>
   );
 }
 
