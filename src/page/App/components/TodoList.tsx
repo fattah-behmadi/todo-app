@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useAppSelector } from "../../../hooks/useAppSelector";
+import { useAppSelector } from "../../../store/useAppSelector";
 import { reorderTodos } from "../../../store/todoSlice";
 import { filterTodos, sortTodos } from "../../../utils/todoUtils";
 import { TodoItem } from "./TodoItem";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { useAppDispatch } from "../../../store/useAppDispatch";
 import { updateTodo } from "../../../store/todoSlice";
 import { TodoService } from "../../../services/todoService";
 import { AddTodoForm } from "./AddTodoForm";
 import { useDragAndDrop, CustomDragEvent } from "../../../plugin/Dnd-JS";
+import { Loading } from "@/components/Loading";
 
 export const TodoList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -104,13 +105,7 @@ export const TodoList: React.FC = () => {
     setDragEndCallback(handleDragEnd);
   }, [registerContainer, setDragEndCallback, handleDragEnd]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
   if (sortedTodos.length === 0) {
     return (

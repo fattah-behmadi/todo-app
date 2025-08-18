@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { useAppSelector } from "../../../hooks/useAppSelector";
+import { useAppSelector } from "../../../store/useAppSelector";
 import { setTodos, setLoading, setError } from "../../../store/todoSlice";
 import { TodoService } from "../../../services/todoService";
 import { TodoFilters } from "./TodoFilters";
 import { TodoList } from "./TodoList";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { useAppDispatch } from "../../../store/useAppDispatch";
 
 export const TodoApp: React.FC = () => {
   const dispatch = useAppDispatch();

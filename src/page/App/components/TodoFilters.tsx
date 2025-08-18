@@ -1,12 +1,12 @@
 import React from "react";
-import { useAppSelector } from "../../../hooks/useAppSelector";
+import { useAppSelector } from "../../../store/useAppSelector";
 import { setFilter, setSearchQuery } from "../../../store/todoSlice";
 import {
   getCompletedCount,
   getIncompleteCount,
   getTotalCount,
 } from "../../../utils/todoUtils";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { useAppDispatch } from "../../../store/useAppDispatch";
 
 export const TodoFilters: React.FC = () => {
   const dispatch = useAppDispatch();
