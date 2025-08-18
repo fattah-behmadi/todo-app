@@ -1,16 +1,15 @@
-import React, {useEffect} from "react";
-import {useAppSelector} from "../hooks/useAppSelector";
-import {setTodos, setLoading, setError} from "../store/todoSlice";
-import {TodoService} from "../services/todoService";
-import {AddTodoForm} from "./AddTodoForm";
-import {TodoFilters} from "./TodoFilters";
-import {TodoList} from "./TodoList";
-import {ErrorBoundary} from "./ErrorBoundary";
-import {useAppDispatch} from "../hooks/useAppDispatch";
+import React, { useEffect } from "react";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { setTodos, setLoading, setError } from "../store/todoSlice";
+import { TodoService } from "../services/todoService";
+import { TodoFilters } from "./TodoFilters";
+import { TodoList } from "./TodoList";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 
 export const TodoApp: React.FC = () => {
   const dispatch = useAppDispatch();
-  const {todos, loading, error} = useAppSelector((state) => state.todos);
+  const { error } = useAppSelector((state) => state.todos);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -41,7 +40,8 @@ export const TodoApp: React.FC = () => {
               className="w-16 h-16 mx-auto"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24">
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -64,13 +64,15 @@ export const TodoApp: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              مدیریت وظایف
-            </h1>
+          <div className="text-center mb-8 pt-6 space-y-4">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                مدیریت وظایف
+              </h1>
+            </div>
             <p className="text-lg text-gray-600">
               وظایف خود را به راحتی مدیریت کنید
             </p>
@@ -78,7 +80,6 @@ export const TodoApp: React.FC = () => {
 
           {/* Main Content */}
           <div className="space-y-6">
-            <AddTodoForm />
             <TodoFilters />
             <TodoList />
           </div>

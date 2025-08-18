@@ -61,7 +61,7 @@ export const TodoFilters: React.FC = () => {
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex space-x-2 space-x-reverse">
+        <div className="flex gap-2">
           <button
             onClick={() => handleFilterChange("all")}
             className={`btn-secondary ${
@@ -71,6 +71,7 @@ export const TodoFilters: React.FC = () => {
             }`}>
             همه ({totalCount})
           </button>
+
           <button
             onClick={() => handleFilterChange("incomplete")}
             className={`btn-secondary ${
@@ -80,6 +81,7 @@ export const TodoFilters: React.FC = () => {
             }`}>
             ناتمام ({incompleteCount})
           </button>
+
           <button
             onClick={() => handleFilterChange("completed")}
             className={`btn-secondary ${

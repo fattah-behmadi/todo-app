@@ -1,0 +1,234 @@
+[
+  // Common development shortcuts
+  {
+    "key": "ctrl+shift+r",
+    "command": "workbench.action.terminal.new",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+t",
+    "command": "workbench.action.terminal.toggleTerminal"
+  },
+  {
+    "key": "ctrl+shift+d",
+    "command": "workbench.view.debug"
+  },
+  {
+    "key": "ctrl+shift+e",
+    "command": "workbench.view.explorer"
+  },
+  {
+    "key": "ctrl+shift+g",
+    "command": "workbench.view.scm"
+  },
+  {
+    "key": "ctrl+shift+x",
+    "command": "workbench.view.extensions"
+  },
+
+  // File operations
+  {
+    "key": "ctrl+n",
+    "command": "workbench.action.files.newUntitledFile"
+  },
+  {
+    "key": "ctrl+shift+n",
+    "command": "workbench.action.files.newFile"
+  },
+  {
+    "key": "ctrl+shift+s",
+    "command": "workbench.action.files.saveAs"
+  },
+
+  // Editor shortcuts
+  {
+    "key": "ctrl+/",
+    "command": "editor.action.commentLine",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+/",
+    "command": "editor.action.blockComment",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+d",
+    "command": "editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "editor.action.deleteLines",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "alt+shift+up",
+    "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "alt+shift+down",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+up",
+    "command": "editor.action.copyLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+down",
+    "command": "editor.action.copyLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+
+  // Search and navigation
+  {
+    "key": "ctrl+shift+f",
+    "command": "workbench.action.findInFiles"
+  },
+  {
+    "key": "ctrl+shift+h",
+    "command": "workbench.action.replaceInFiles"
+  },
+  {
+    "key": "ctrl+shift+o",
+    "command": "workbench.action.gotoSymbol"
+  },
+  {
+    "key": "ctrl+shift+p",
+    "command": "workbench.action.showCommands"
+  },
+  {
+    "key": "ctrl+shift+e",
+    "command": "workbench.view.explorer"
+  },
+
+  // Git shortcuts
+  {
+    "key": "ctrl+shift+g s",
+    "command": "workbench.view.scm"
+  },
+  {
+    "key": "ctrl+shift+g c",
+    "command": "git.commit"
+  },
+  {
+    "key": "ctrl+shift+g p",
+    "command": "git.push"
+  },
+  {
+    "key": "ctrl+shift+g l",
+    "command": "git.pull"
+  },
+
+  // Task shortcuts
+  {
+    "key": "ctrl+shift+b",
+    "command": "workbench.action.tasks.build"
+  },
+  {
+    "key": "ctrl+shift+t",
+    "command": "workbench.action.tasks.test"
+  },
+
+  // Custom shortcuts for your React/TypeScript project
+  {
+    "key": "ctrl+shift+1",
+    "command": "npm.run",
+    "args": "dev",
+    "when": "workspaceFolderCount == 1"
+  },
+  {
+    "key": "ctrl+shift+2",
+    "command": "npm.run",
+    "args": "build",
+    "when": "workspaceFolderCount == 1"
+  },
+  {
+    "key": "ctrl+shift+3",
+    "command": "npm.run",
+    "args": "preview",
+    "when": "workspaceFolderCount == 1"
+  },
+  {
+    "key": "ctrl+shift+4",
+    "command": "npm.run",
+    "args": "lint",
+    "when": "workspaceFolderCount == 1"
+  },
+
+  // Formatting shortcuts
+  {
+    "key": "shift+alt+f",
+    "command": "editor.action.formatDocument",
+    "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+  },
+  {
+    "key": "ctrl+k ctrl+f",
+    "command": "editor.action.formatSelection",
+    "when": "editorHasDocumentFormattingProvider && editorHasSelection && editorTextFocus && !editorReadonly && !inCompositeEditor"
+  },
+
+  // Multi-cursor shortcuts
+  {
+    "key": "alt+click",
+    "command": "editor.action.insertCursor",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+alt+up",
+    "command": "editor.action.insertCursorAbove",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+alt+down",
+    "command": "editor.action.insertCursorBelow",
+    "when": "editorTextFocus"
+  },
+
+  // Split editor shortcuts
+  {
+    "key": "ctrl+\\",
+    "command": "workbench.action.splitEditor"
+  },
+  {
+    "key": "ctrl+shift+\\",
+    "command": "workbench.action.splitEditorOrthogonal"
+  },
+  {
+    "key": "ctrl+1",
+    "command": "workbench.action.focusFirstEditorGroup"
+  },
+  {
+    "key": "ctrl+2",
+    "command": "workbench.action.focusSecondEditorGroup"
+  },
+  {
+    "key": "ctrl+3",
+    "command": "workbench.action.focusThirdEditorGroup"
+  },
+
+  // Quick access shortcuts
+  {
+    "key": "ctrl+shift+c",
+    "command": "workbench.action.openRecent"
+  },
+  {
+    "key": "ctrl+shift+w",
+    "command": "workbench.action.closeAllEditors"
+  },
+  {
+    "key": "ctrl+shift+tab",
+    "command": "workbench.action.previousEditorInGroup"
+  },
+  {
+    "key": "ctrl+tab",
+    "command": "workbench.action.nextEditorInGroup"
+  }
+]

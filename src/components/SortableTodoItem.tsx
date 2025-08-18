@@ -29,11 +29,9 @@ export const SortableTodoItem: React.FC<SortableTodoItemProps> = ({ todo, index 
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className={`cursor-grab active:cursor-grabbing ${isDragging ? 'z-50' : ''}`}
+      className={`${isDragging ? 'z-50' : ''}`}
     >
-      <TodoItem todo={todo} index={index} />
+      <TodoItem todo={todo} index={index} dragListeners={listeners} dragAttributes={attributes} />
     </div>
   );
 };
