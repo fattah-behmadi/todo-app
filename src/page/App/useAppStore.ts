@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useInfiniteQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { TodoService } from "@/services/todoService";
 import { useAppDispatch } from "@/store/useAppDispatch";
 import {
@@ -20,7 +16,7 @@ import { Todo } from "@/types/todo.types";
 const TODOS_QUERY_KEY = "todos";
 const LIMIT = 30;
 
-interface TodoResponse {
+interface GetTodoResponse {
   pages: { todos: Todo[]; total: number; nextPage?: number }[];
   pageParams: number[];
 }
@@ -29,43 +25,43 @@ export const useAppStore = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
-  const useTodos = () => {
-    return useInfiniteQuery<TodoResponse, Error>({
-      queryKey: [TODOS_QUERY_KEY],
-      queryFn: async ({ pageParam = 0 }) => {
-        try {
-          dispatch(setLoading(true));
-          const skip = Number(pageParam) * LIMIT;
-          const response = await TodoService.getAllTodos(skip, LIMIT);
-
-          return {
-            ...response,
-            nextPage:
-              skip + response.todos.length < response.total
-                ? Number(pageParam) + 1
-                : undefined,
-          };
-        } catch (error: any) {
-          const errorMessage = error.message || "Error fetching Todos";
-          dispatch(setError(errorMessage));
-          console.error("Error fetching Todos:", error);
-          throw error;
-        } finally {
-          dispatch(setLoading(false));
-        }
-      },
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) => lastPage.nextPage,
-      staleTime: 1000 * 60 * 5,
-      retry: 2,
-    });
-  };
+  // const useTodos = () => {
+  //   return useInfiniteQuery<TodoResponse, Error>({
+  //     queryKey: [TODOS_QUERY_KEY],
+  //     queryFn: async ({ pageParam = 0 }: { pageParam: number }) => {
+  //       try {
+  //         dispatch(setLoading(true));
+  //         const skip = Number(pageParam) * LIMIT;
+  //         const response = await TodoService.getAllTodos(skip, LIMIT);
+  //         console.log("🚀 ~ useTodos ~ response:", response);
+  //         return {
+  //           ...response,
+  //           nextPage:
+  //             skip + response.todos.length < response.total
+  //               ? Number(pageParam) + 1
+  //               : undefined,
+  //         };
+  //       } catch (error: any) {
+  //         const errorMessage = error.message || "Error fetching Todos";
+  //         dispatch(setError(errorMessage));
+  //         console.error("Error fetching Todos:", error);
+  //         throw error;
+  //       } finally {
+  //         dispatch(setLoading(false));
+  //       }
+  //     },
+  //     initialPageParam: 0,
+  //     getNextPageParam: (lastPage) => lastPage.nextPage,
+  //     staleTime: 1000 * 60 * 5,
+  //     retry: 2,
+  //   });
+  // };
 
   const fetchTodos = async () => {
     try {
       dispatch(setLoading(true));
 
-      const todosData = await queryClient.fetchQuery<TodoResponse, Error>({
+      const todosData = await queryClient.fetchQuery<GetTodoResponse, Error>({
         queryKey: [TODOS_QUERY_KEY],
         queryFn: async () => ({
           pages: [
@@ -106,15 +102,30 @@ export const useAppStore = () => {
 
       dispatch(addTodo(newTodo));
 
-      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
-        if (!oldData) return { todos: [newTodo], total: 1 };
+      queryClient.setQueryData<GetTodoResponse>(
+        [TODOS_QUERY_KEY],
+        (oldData) => {
+          if (!oldData || !oldData.pages || !oldData.pages[0]) {
+            return {
+              pages: [{ todos: [newTodo], total: 1, nextPage: undefined }],
+              pageParams: [0],
+            };
+          }
 
-        return {
-          ...oldData,
-          todos: [...oldData.todos, newTodo],
-          total: oldData.total + 1,
-        };
-      });
+          const firstPage = oldData.pages[0];
+          return {
+            ...oldData,
+            pages: [
+              {
+                ...firstPage,
+                todos: [...firstPage.todos, newTodo],
+                total: firstPage.total + 1,
+              },
+              ...oldData.pages.slice(1),
+            ],
+          };
+        }
+      );
 
       return newTodo;
     } catch (error: any) {
@@ -132,16 +143,27 @@ export const useAppStore = () => {
 
       dispatch(updateTodo(updatedTodo));
 
-      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
-        if (!oldData) return { todos: [], total: 0 };
+      queryClient.setQueryData<GetTodoResponse>(
+        [TODOS_QUERY_KEY],
+        (oldData) => {
+          if (!oldData || !oldData.pages || !oldData.pages[0]) {
+            return {
+              pages: [{ todos: [], total: 0, nextPage: undefined }],
+              pageParams: [0],
+            };
+          }
 
-        return {
-          ...oldData,
-          todos: oldData.todos.map((todo) =>
-            todo.id === updatedTodo.id ? updatedTodo : todo
-          ),
-        };
-      });
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              todos: page.todos.map((todo) =>
+                todo.id === updatedTodo.id ? updatedTodo : todo
+              ),
+            })),
+          };
+        }
+      );
 
       return updatedTodo;
     } catch (error) {
@@ -156,16 +178,27 @@ export const useAppStore = () => {
 
       dispatch(toggleTodoStatus(todoId));
 
-      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
-        if (!oldData) return { todos: [], total: 0 };
+      queryClient.setQueryData<GetTodoResponse>(
+        [TODOS_QUERY_KEY],
+        (oldData) => {
+          if (!oldData || !oldData.pages || !oldData.pages[0]) {
+            return {
+              pages: [{ todos: [], total: 0, nextPage: undefined }],
+              pageParams: [0],
+            };
+          }
 
-        return {
-          ...oldData,
-          todos: oldData.todos.map((todo) =>
-            todo.id === updatedTodo.id ? updatedTodo : todo
-          ),
-        };
-      });
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              todos: page.todos.map((todo) =>
+                todo.id === updatedTodo.id ? updatedTodo : todo
+              ),
+            })),
+          };
+        }
+      );
 
       return updatedTodo;
     } catch (error) {
@@ -180,15 +213,26 @@ export const useAppStore = () => {
 
       dispatch(deleteTodo(todoId));
 
-      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
-        if (!oldData) return { todos: [], total: 0 };
+      queryClient.setQueryData<GetTodoResponse>(
+        [TODOS_QUERY_KEY],
+        (oldData) => {
+          if (!oldData || !oldData.pages || !oldData.pages[0]) {
+            return {
+              pages: [{ todos: [], total: 0, nextPage: undefined }],
+              pageParams: [0],
+            };
+          }
 
-        return {
-          ...oldData,
-          todos: oldData.todos.filter((todo) => todo.id !== todoId),
-          total: oldData.total - 1,
-        };
-      });
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              todos: page.todos.filter((todo) => todo.id !== todoId),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
     } catch (error) {
       console.error("Error deleting Todo:", error);
       throw error;
@@ -196,7 +240,7 @@ export const useAppStore = () => {
   };
 
   return {
-    useTodos,
+    // useTodos,
     fetchTodos,
     createTodo,
     updateTodoText,
