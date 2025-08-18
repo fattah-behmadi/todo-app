@@ -1,33 +1,19 @@
 import React, { useEffect } from "react";
 import { useAppSelector } from "../../../store/useAppSelector";
-import { setTodos, setLoading, setError } from "../../../store/todoSlice";
-import { TodoService } from "../../../services/todoService";
 import { TodoFilters } from "./TodoFilters";
 import { TodoList } from "./TodoList";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { useAppDispatch } from "../../../store/useAppDispatch";
 import { WarningIcon } from "../../../components/icons";
 import { Button, Card } from "../../../components/base";
+import { useAppStore } from "../useAppStore";
 
 export const TodoApp: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { fetchTodos } = useAppStore();
   const { error } = useAppSelector((state) => state.todos);
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        dispatch(setLoading(true));
-        const todosData = await TodoService.getAllTodos();
-        dispatch(setTodos(todosData));
-      } catch (error: any) {
-        const errorMessage = error.message || "Error fetching Todos";
-        dispatch(setError(errorMessage));
-        console.error("Error fetching Todos:", error);
-      }
-    };
-
     fetchTodos();
-  }, [dispatch]);
+  }, []);
 
   const handleRetry = () => {
     window.location.reload();

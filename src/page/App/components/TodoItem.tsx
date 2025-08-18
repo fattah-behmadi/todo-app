@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Todo } from "../../../types/todo.types";
-import { useAppDispatch } from "../../../store/useAppDispatch";
-import { updateTodo, deleteTodo } from "../../../store/todoSlice";
-import { TodoService } from "../../../services/todoService";
 import { useDragAndDrop } from "../../../plugin/Dnd-JS";
 import { DeleteTodoDialog } from "../../../components";
+import { useAppStore } from "../useAppStore";
 import {
   DragHandleIcon,
   CheckIcon,
@@ -19,7 +17,7 @@ interface TodoItemProps {
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
-  const dispatch = useAppDispatch();
+  const { updateTodoText, toggleTodo, removeTodo } = useAppStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.todo);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -32,11 +30,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
   const handleToggleStatus = async () => {
     try {
       setIsUpdating(true);
-      const updatedTodo = await TodoService.toggleTodoStatus(
-        todo.id,
-        !todo.completed
-      );
-      dispatch(updateTodo(updatedTodo));
+      await toggleTodo(todo.id, !todo.completed);
     } catch (error) {
       console.error("Error changing status:", error);
     } finally {
@@ -51,8 +45,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
   const handleConfirmDelete = async () => {
     try {
       setIsUpdating(true);
-      await TodoService.deleteTodo(todo.id);
-      dispatch(deleteTodo(todo.id));
+      await removeTodo(todo.id);
       setShowDeleteDialog(false);
     } catch (error) {
       console.error("Error deleting:", error);
@@ -73,11 +66,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
     if (editText.trim() && editText !== todo.todo) {
       try {
         setIsUpdating(true);
-        const updatedTodo = await TodoService.updateTodoText(
-          todo.id,
-          editText.trim()
-        );
-        dispatch(updateTodo(updatedTodo));
+        await updateTodoText(todo.id, editText.trim());
         setIsEditing(false);
       } catch (error) {
         console.error("Error updating:", error);

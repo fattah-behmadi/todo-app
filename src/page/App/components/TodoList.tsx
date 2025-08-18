@@ -1,18 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useAppSelector } from "../../../store/useAppSelector";
-import { reorderTodos } from "../../../store/todoSlice";
 import { filterTodos, sortTodos } from "../../../utils/todoUtils";
 import { TodoItem } from "./TodoItem";
-import { useAppDispatch } from "../../../store/useAppDispatch";
-import { updateTodo } from "../../../store/todoSlice";
-import { TodoService } from "../../../services/todoService";
+import { useAppStore } from "../useAppStore";
 import { AddTodoForm } from "./AddTodoForm";
 import { useDragAndDrop, CustomDragEvent } from "../../../plugin/Dnd-JS";
 import { Loading } from "@/components/Loading";
 import { ClipboardIcon } from "../../../components/icons";
 
 export const TodoList: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { updateTodoText, toggleTodo } = useAppStore();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const { todos, filter, searchQuery, loading } = useAppSelector(
     (state) => state.todos
@@ -45,11 +42,7 @@ export const TodoList: React.FC = () => {
             // Only update if the completion status is different
             if (draggedTodo.completed !== targetCompleted) {
               try {
-                const updatedTodo = await TodoService.toggleTodoStatus(
-                  draggedTodo.id,
-                  targetCompleted
-                );
-                dispatch(updateTodo(updatedTodo));
+                await toggleTodo(draggedTodo.id, targetCompleted);
               } catch (error) {
                 console.error("Error in toggleTodoStatus:", error);
               }
@@ -62,27 +55,9 @@ export const TodoList: React.FC = () => {
               // Check if dragged to different completion status
               if (draggedTodo.completed !== targetTodo.completed) {
                 try {
-                  const updatedTodo = await TodoService.toggleTodoStatus(
-                    draggedTodo.id,
-                    targetTodo.completed
-                  );
-                  dispatch(updateTodo(updatedTodo));
+                  await toggleTodo(draggedTodo.id, targetTodo.completed);
                 } catch (error) {
                   console.error("Error in toggleTodoStatus:", error);
-                }
-              } else {
-                // Reorder within the same column
-                const oldIndex = sortedTodos.findIndex(
-                  (todo) => todo.id === active.id
-                );
-                const newIndex = sortedTodos.findIndex(
-                  (todo) => todo.id === over.id
-                );
-
-                if (oldIndex !== -1 && newIndex !== -1) {
-                  dispatch(
-                    reorderTodos({ startIndex: oldIndex, endIndex: newIndex })
-                  );
                 }
               }
             }
@@ -90,7 +65,7 @@ export const TodoList: React.FC = () => {
         }
       }
     },
-    [sortedTodos, dispatch]
+    [sortedTodos, toggleTodo]
   );
 
   // Register containers for drag and drop

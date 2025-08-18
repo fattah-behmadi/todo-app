@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../../../store/useAppDispatch";
-import { addTodo } from "../../../store/todoSlice";
-import { TodoService } from "../../../services/todoService";
-import { CreateTodoSchema, CreateTodoInput } from "../../../types/validation";
 import { Card, Button, Input } from "../../../components/base";
+import { useAppStore } from "../useAppStore";
 
 export const AddTodoForm: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { createTodo } = useAppStore();
   const [todoText, setTodoText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,20 +20,7 @@ export const AddTodoForm: React.FC = () => {
       setIsSubmitting(true);
       setError(null);
 
-      const input: CreateTodoInput = {
-        todo: todoText.trim(),
-        completed: false,
-        userId: 1,
-      };
-
-      // Validate input
-      const validatedInput = CreateTodoSchema.parse(input);
-
-      // Create todo
-      const newTodo = await TodoService.createTodo(validatedInput);
-
-      // Add to store
-      dispatch(addTodo(newTodo));
+      await createTodo(todoText);
 
       // Reset form
       setTodoText("");
