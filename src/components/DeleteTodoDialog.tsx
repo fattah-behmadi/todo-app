@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog } from "./Dialog";
 import { Todo } from "../types/todo.types";
 import { WarningIcon } from "./icons";
+import { Button } from "./base";
 
 export interface DeleteTodoDialogProps {
   isOpen: boolean;
@@ -57,29 +58,23 @@ export const DeleteTodoDialog: React.FC<DeleteTodoDialogProps> = ({
 
         {/* Action Buttons */}
         <div className="flex gap-4 pt-2">
-          <button
+          <Button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 btn-secondary"
+            variant="secondary"
+            fullWidth
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="flex-1 btn-danger relative"
+            variant="danger"
+            loading={isLoading}
+            fullWidth
           >
-            {isLoading ? (
-              <>
-                <span className="opacity-0">Delete</span>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              </>
-            ) : (
-              "Delete"
-            )}
-          </button>
+            Delete
+          </Button>
         </div>
       </div>
     </Dialog>

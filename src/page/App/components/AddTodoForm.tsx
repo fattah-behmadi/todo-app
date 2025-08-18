@@ -3,6 +3,7 @@ import { useAppDispatch } from "../../../store/useAppDispatch";
 import { addTodo } from "../../../store/todoSlice";
 import { TodoService } from "../../../services/todoService";
 import { CreateTodoSchema, CreateTodoInput } from "../../../types/validation";
+import { Card, Button, Input } from "../../../components/base";
 
 export const AddTodoForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -59,58 +60,33 @@ export const AddTodoForm: React.FC = () => {
   };
 
   return (
-    <div className="card mb-6">
+    <Card className="mb-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Add New Todo</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="todoInput"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Todo Title
-          </label>
-          <input
-            id="todoInput"
-            type="text"
-            value={todoText}
-            onChange={handleInputChange}
-            placeholder="Example: Buy groceries..."
-            className={`input ${
-              error ? "border-danger-500 focus:ring-danger-500" : ""
-            }`}
-            disabled={isSubmitting}
-            maxLength={200}
-          />
-          {error && (
-            <p className="mt-1 text-sm text-danger-600 animate-fade-in">
-              {error}
-            </p>
-          )}
-          <p className="mt-1 text-xs text-gray-500">
-            {todoText.length}/200 characters
-          </p>
-        </div>
+        <Input
+          id="todoInput"
+          type="text"
+          value={todoText}
+          onChange={handleInputChange}
+          placeholder="Example: Buy groceries..."
+          label="Todo Title"
+          variant={error ? "error" : "default"}
+          error={error || undefined}
+          helpText={`${todoText.length}/200 characters`}
+          disabled={isSubmitting}
+          maxLength={200}
+        />
 
-        <button
+        <Button
           type="submit"
           disabled={isSubmitting || !todoText.trim()}
-          className={`btn-primary w-full ${
-            isSubmitting || !todoText.trim()
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-primary-700"
-          }`}
+          loading={isSubmitting}
+          fullWidth
         >
-          {isSubmitting ? (
-            <div className="flex items-center justify-center space-x-2 space-x-reverse">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Creating...</span>
-            </div>
-          ) : (
-            "Add Todo"
-          )}
-        </button>
+          {isSubmitting ? "Creating..." : "Add Todo"}
+        </Button>
       </form>
-    </div>
+    </Card>
   );
 };

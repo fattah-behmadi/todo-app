@@ -11,6 +11,7 @@ import {
   EditIcon,
   DeleteIcon,
 } from "../../../components/icons";
+import { Spinner } from "../../../components/base";
 
 interface TodoItemProps {
   todo: Todo;
@@ -168,7 +169,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
               }`}
               onClick={handleEdit}
             >
-              <span>{todo.id} - </span>
               {todo.todo}
             </p>
           )}
@@ -199,7 +199,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
       {/* Loading Indicator */}
       {isUpdating && (
         <div className="mt-2 flex justify-center">
-          <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+          <Spinner size="sm" />
         </div>
       )}
 

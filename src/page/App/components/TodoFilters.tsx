@@ -8,6 +8,13 @@ import {
 } from "../../../utils/todoUtils";
 import { useAppDispatch } from "../../../store/useAppDispatch";
 import { SearchIcon } from "../../../components/icons";
+import {
+  Card,
+  Button,
+  Input,
+  ProgressBar,
+  Badge,
+} from "../../../components/base";
 
 export const TodoFilters: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -28,80 +35,67 @@ export const TodoFilters: React.FC = () => {
   };
 
   return (
-    <div className="card mb-6">
+    <Card className="mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
         {/* Search */}
         <div className="flex-1 max-w-md">
-          <label htmlFor="searchInput" className="sr-only">
-            Search in Todos
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <SearchIcon className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              id="searchInput"
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Search in Todos..."
-              className="input pr-10"
-            />
-          </div>
+          <Input
+            id="searchInput"
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search in Todos..."
+            rightIcon={<SearchIcon />}
+            fullWidth={false}
+          />
         </div>
 
         {/* Filter Buttons */}
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={() => handleFilterChange("all")}
-            className={`btn-secondary ${
-              filter === "all"
-                ? "bg-primary-100 text-primary-700 border-primary-300"
-                : "hover:bg-gray-300"
-            }`}
+            variant={filter === "all" ? "primary" : "secondary"}
           >
-            All ({totalCount})
-          </button>
+            All
+            <Badge variant="default" size="sm" className="ml-1">
+              {totalCount}
+            </Badge>
+          </Button>
 
-          <button
+          <Button
             onClick={() => handleFilterChange("incomplete")}
-            className={`btn-secondary ${
-              filter === "incomplete"
-                ? "bg-primary-100 text-primary-700 border-primary-300"
-                : "hover:bg-gray-300"
-            }`}
+            variant={filter === "incomplete" ? "primary" : "secondary"}
           >
-            Incomplete ({incompleteCount})
-          </button>
+            Incomplete{" "}
+            <Badge variant="warning" size="sm" className="ml-1">
+              {incompleteCount}
+            </Badge>
+          </Button>
 
-          <button
+          <Button
             onClick={() => handleFilterChange("completed")}
-            className={`btn-secondary ${
-              filter === "completed"
-                ? "bg-primary-100 text-primary-700 border-primary-300"
-                : "hover:bg-gray-300"
-            }`}
+            variant={filter === "completed" ? "primary" : "secondary"}
           >
-            Completed ({completedCount})
-          </button>
+            Completed{" "}
+            <Badge variant="success" size="sm" className="ml-1">
+              {completedCount}
+            </Badge>
+          </Button>
         </div>
       </div>
 
       {/* Progress Bar */}
       {totalCount > 0 && (
         <div className="mt-4">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Overall Progress</span>
-            <span>{Math.round((completedCount / totalCount) * 100)}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-success-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(completedCount / totalCount) * 100}%` }}
-            ></div>
-          </div>
+          <ProgressBar
+            value={completedCount}
+            max={totalCount}
+            color="success"
+            label="Overall Progress"
+            showPercentage
+          />
         </div>
       )}
-    </div>
+    </Card>
   );
 };

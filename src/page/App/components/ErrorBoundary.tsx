@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import { WarningIcon } from "../../../components/icons";
+import { Button, Card } from "../../../components/base";
 
 interface Props {
   children: ReactNode;
@@ -27,7 +28,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+          <Card className="max-w-md w-full text-center" variant="elevated">
             <div className="text-danger-500 mb-4">
               <WarningIcon className="w-16 h-16 mx-auto" />
             </div>
@@ -38,13 +39,10 @@ export class ErrorBoundary extends Component<Props, State> {
               Unfortunately, there was a problem with the application. Please
               reload the page.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="btn-primary"
-            >
+            <Button onClick={() => window.location.reload()} variant="primary">
               Reload
-            </button>
-          </div>
+            </Button>
+          </Card>
         </div>
       );
     }

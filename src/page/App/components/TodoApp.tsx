@@ -7,6 +7,7 @@ import { TodoList } from "./TodoList";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { useAppDispatch } from "../../../store/useAppDispatch";
 import { WarningIcon } from "../../../components/icons";
+import { Button, Card } from "../../../components/base";
 
 export const TodoApp: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -35,7 +36,7 @@ export const TodoApp: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+        <Card className="max-w-md w-full text-center" variant="elevated">
           <div className="text-danger-500 mb-4">
             <WarningIcon className="w-16 h-16 mx-auto" />
           </div>
@@ -43,10 +44,10 @@ export const TodoApp: React.FC = () => {
             Loading Error
           </h1>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button onClick={handleRetry} className="btn-primary">
+          <Button onClick={handleRetry} variant="primary">
             Retry
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }
