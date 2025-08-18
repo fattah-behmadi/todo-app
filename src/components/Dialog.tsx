@@ -113,7 +113,7 @@ export const Dialog: React.FC<DialogProps> = ({
               <button
                 onClick={onClose}
                 className="p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                aria-label="بستن"
+                aria-label="Close"
                 type="button"
               >
                 <svg

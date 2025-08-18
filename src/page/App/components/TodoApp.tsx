@@ -18,9 +18,9 @@ export const TodoApp: React.FC = () => {
         const todosData = await TodoService.getAllTodos();
         dispatch(setTodos(todosData));
       } catch (error: any) {
-        const errorMessage = error.message || "خطا در دریافت Todos";
+        const errorMessage = error.message || "Error fetching Todos";
         dispatch(setError(errorMessage));
-        console.error("خطا در دریافت Todos:", error);
+        console.error("Error fetching Todos:", error);
       }
     };
 
@@ -51,11 +51,11 @@ export const TodoApp: React.FC = () => {
             </svg>
           </div>
           <h1 className="text-xl font-semibold text-gray-900 mb-2">
-            خطا در بارگذاری
+            Loading Error
           </h1>
           <p className="text-gray-600 mb-4">{error}</p>
           <button onClick={handleRetry} className="btn-primary">
-            تلاش مجدد
+            Retry
           </button>
         </div>
       </div>
@@ -70,12 +70,10 @@ export const TodoApp: React.FC = () => {
           <div className="text-center mb-8 pt-6 space-y-4">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                مدیریت وظایف
+                Task Management
               </h1>
             </div>
-            <p className="text-lg text-gray-600">
-              وظایف خود را به راحتی مدیریت کنید
-            </p>
+            <p className="text-lg text-gray-600">Easily manage your tasks</p>
           </div>
 
           {/* Main Content */}
@@ -86,7 +84,7 @@ export const TodoApp: React.FC = () => {
 
           {/* Footer */}
           <div className="text-center mt-12 text-gray-500">
-            <p>ساخته شده با ❤️ و React + TypeScript</p>
+            <p>Built with ❤️ and React + TypeScript</p>
           </div>
         </div>
       </div>

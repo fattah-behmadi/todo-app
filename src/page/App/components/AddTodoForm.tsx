@@ -14,7 +14,7 @@ export const AddTodoForm: React.FC = () => {
     e.preventDefault();
 
     if (!todoText.trim()) {
-      setError("عنوان Todo نمی‌تواند خالی باشد");
+      setError("Todo title cannot be empty");
       return;
     }
 
@@ -41,11 +41,11 @@ export const AddTodoForm: React.FC = () => {
       setTodoText("");
     } catch (error: any) {
       if (error.name === "ZodError") {
-        setError(error.errors[0]?.message || "خطا در اعتبارسنجی");
+        setError(error.errors[0]?.message || "Validation error");
       } else {
-        setError("خطا در ایجاد Todo. لطفاً دوباره تلاش کنید.");
+        setError("Error creating Todo. Please try again.");
       }
-      console.error("خطا در ایجاد Todo:", error);
+      console.error("Error creating Todo:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -60,9 +60,7 @@ export const AddTodoForm: React.FC = () => {
 
   return (
     <div className="card mb-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        افزودن Todo جدید
-      </h2>
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">Add New Todo</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -70,14 +68,14 @@ export const AddTodoForm: React.FC = () => {
             htmlFor="todoInput"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            عنوان Todo
+            Todo Title
           </label>
           <input
             id="todoInput"
             type="text"
             value={todoText}
             onChange={handleInputChange}
-            placeholder="مثال: خرید مواد غذایی..."
+            placeholder="Example: Buy groceries..."
             className={`input ${
               error ? "border-danger-500 focus:ring-danger-500" : ""
             }`}
@@ -90,7 +88,7 @@ export const AddTodoForm: React.FC = () => {
             </p>
           )}
           <p className="mt-1 text-xs text-gray-500">
-            {todoText.length}/200 کاراکتر
+            {todoText.length}/200 characters
           </p>
         </div>
 
@@ -106,10 +104,10 @@ export const AddTodoForm: React.FC = () => {
           {isSubmitting ? (
             <div className="flex items-center justify-center space-x-2 space-x-reverse">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>در حال ایجاد...</span>
+              <span>Creating...</span>
             </div>
           ) : (
-            "افزودن Todo"
+            "Add Todo"
           )}
         </button>
       </form>

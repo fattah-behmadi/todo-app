@@ -32,7 +32,7 @@ export const TodoFilters: React.FC = () => {
         {/* Search */}
         <div className="flex-1 max-w-md">
           <label htmlFor="searchInput" className="sr-only">
-            جستجو در Todos
+            Search in Todos
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -55,7 +55,7 @@ export const TodoFilters: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="جستجو در Todos..."
+              placeholder="Search in Todos..."
               className="input pr-10"
             />
           </div>
@@ -71,7 +71,7 @@ export const TodoFilters: React.FC = () => {
                 : "hover:bg-gray-300"
             }`}
           >
-            همه ({totalCount})
+            All ({totalCount})
           </button>
 
           <button
@@ -82,7 +82,7 @@ export const TodoFilters: React.FC = () => {
                 : "hover:bg-gray-300"
             }`}
           >
-            ناتمام ({incompleteCount})
+            Incomplete ({incompleteCount})
           </button>
 
           <button
@@ -93,7 +93,7 @@ export const TodoFilters: React.FC = () => {
                 : "hover:bg-gray-300"
             }`}
           >
-            تکمیل شده ({completedCount})
+            Completed ({completedCount})
           </button>
         </div>
       </div>
@@ -102,7 +102,7 @@ export const TodoFilters: React.FC = () => {
       {totalCount > 0 && (
         <div className="mt-4">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>پیشرفت کلی</span>
+            <span>Overall Progress</span>
             <span>{Math.round((completedCount / totalCount) * 100)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">

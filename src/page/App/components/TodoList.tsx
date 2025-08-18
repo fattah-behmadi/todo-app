@@ -23,7 +23,7 @@ export const TodoList: React.FC = () => {
   const filteredTodos = filterTodos(todos, filter, searchQuery);
   const sortedTodos = sortTodos(filteredTodos);
 
-  // جدا کردن todos بر اساس وضعیت
+  // Separate todos based on status
   const incompleteTodos = sortedTodos.filter((todo) => !todo.completed);
   const completedTodos = sortedTodos.filter((todo) => todo.completed);
 
@@ -132,13 +132,13 @@ export const TodoList: React.FC = () => {
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">
           {filter === "all" && !searchQuery
-            ? "هنوز هیچ Todo اضافه نشده است"
-            : "نتیجه‌ای یافت نشد"}
+            ? "No Todos have been added yet"
+            : "No results found"}
         </h3>
         <p className="text-gray-500">
           {filter === "all" && !searchQuery
-            ? "اولین Todo خود را اضافه کنید تا شروع کنید"
-            : "لطفاً فیلتر یا جستجو را تغییر دهید"}
+            ? "Add your first Todo to get started"
+            : "Please change the filter or search"}
         </p>
       </div>
     );
@@ -148,7 +148,7 @@ export const TodoList: React.FC = () => {
 
   return (
     <div className="space-y-6 grid grid-cols-2 gap-6">
-      {/* ستون اول: وظایف تکمیل نشده */}
+      {/* First column: Incomplete tasks */}
       <div
         ref={incompleteContainerRef}
         className="bg-white rounded-lg border border-gray-200 p-6 space-y-4"
@@ -160,7 +160,7 @@ export const TodoList: React.FC = () => {
             {/* title */}
             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
               <span className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span>
-              <span>وظایف در حال انجام ({incompleteTodos.length})</span>
+              <span>Tasks in Progress ({incompleteTodos.length})</span>
             </h3>
 
             {/* add button */}
@@ -177,7 +177,7 @@ export const TodoList: React.FC = () => {
 
         {incompleteTodos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            همه وظایف تکمیل شده‌اند! 🎉
+            All tasks completed! 🎉
           </div>
         ) : (
           <div className={`space-y-3 ${scrollColumn}`}>
@@ -188,7 +188,7 @@ export const TodoList: React.FC = () => {
         )}
       </div>
 
-      {/* ستون دوم: وظایف تکمیل شده */}
+      {/* Second column: Completed tasks */}
       <div
         ref={completedContainerRef}
         className={`bg-white rounded-lg border border-gray-200 p-6`}
@@ -197,12 +197,12 @@ export const TodoList: React.FC = () => {
       >
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <span className="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
-          وظایف تکمیل شده ({completedTodos.length})
+          Completed Tasks ({completedTodos.length})
         </h3>
 
         {completedTodos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            هنوز هیچ وظیفه‌ای تکمیل نشده است
+            No tasks have been completed yet
           </div>
         ) : (
           <div className={`space-y-3 ${scrollColumn}`}>

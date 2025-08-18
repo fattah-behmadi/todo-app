@@ -1,4 +1,4 @@
-import {Todo} from "../types/todo";
+import { Todo } from "../types/todo.types";
 
 export const filterTodos = (
   todos: Todo[],

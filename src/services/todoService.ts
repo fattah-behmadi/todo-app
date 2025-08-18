@@ -1,4 +1,4 @@
-import { Todo, TodosResponse } from "../types/todo";
+import { Todo, TodosResponse } from "../types/todo.types";
 import { CreateTodoInput, UpdateTodoInput } from "../types/validation";
 import { apiProxy } from "./apiProxy";
 import { TodoMapper } from "./mapper";
@@ -18,7 +18,7 @@ export class TodoService {
       );
       return TodoMapper.fromApiResponseList(response.todos);
     } catch (error) {
-      console.error("خطا در دریافت Todos:", error);
+      console.error("Error fetching Todos:", error);
       throw error;
     }
   }
@@ -32,7 +32,7 @@ export class TodoService {
       );
       return TodoMapper.fromApiResponse(response);
     } catch (error) {
-      console.error("خطا در ایجاد Todo:", error);
+      console.error("Error creating Todo:", error);
       throw error;
     }
   }
@@ -46,7 +46,7 @@ export class TodoService {
       );
       return TodoMapper.fromApiResponse(response);
     } catch (error) {
-      console.error("خطا در به‌روزرسانی Todo:", error);
+      console.error("Error updating Todo:", error);
       throw error;
     }
   }
@@ -56,7 +56,7 @@ export class TodoService {
       await apiProxy.delete(this.ENDPOINTS.DELETE(id));
       return true;
     } catch (error) {
-      console.error("خطا در حذف Todo:", error);
+      console.error("Error deleting Todo:", error);
       throw error;
     }
   }

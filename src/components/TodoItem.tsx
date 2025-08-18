@@ -1,22 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Todo } from "../../../types/todo.types";
-import { useAppDispatch } from "../../../hooks/useAppDispatch";
-import { updateTodo, deleteTodo } from "../../../store/todoSlice";
-import { TodoService } from "../../../services/todoService";
-import { useDragAndDrop } from "../../../plugin/Dnd-JS";
-import { DeleteTodoDialog } from "../../../components";
+import { Todo } from "../types/todo.types";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { updateTodo, deleteTodo } from "../store/todoSlice";
+import { TodoService } from "../services/todoService";
+import { useDragAndDrop } from "../plugin/Dnd-JS";
 
 interface TodoItemProps {
   todo: Todo;
   index: number;
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ todo, index }) => {
   const dispatch = useAppDispatch();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.todo);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const itemRef = useRef<HTMLDivElement>(null);
   const { registerDraggable, unregisterDraggable, isDragging } =
@@ -37,24 +35,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
     }
   };
 
-  const handleDelete = () => {
-    setShowDeleteDialog(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      setIsUpdating(true);
-      await TodoService.deleteTodo(todo.id);
-      dispatch(deleteTodo(todo.id));
-      setShowDeleteDialog(false);
-    } catch (error) {
-      console.error("Error deleting:", error);
-      setIsUpdating(false);
+  const handleDelete = async () => {
+    if (window.confirm("آیا مطمئن هستید که می‌خواهید این Todo را حذف کنید؟")) {
+      try {
+        setIsUpdating(true);
+        await TodoService.deleteTodo(todo.id);
+        dispatch(deleteTodo(todo.id));
+      } catch (error) {
+        console.error("Error deleting:", error);
+      } finally {
+        setIsUpdating(false);
+      }
     }
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeleteDialog(false);
   };
 
   const handleEdit = () => {
@@ -120,7 +112,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
         {/* Drag Handle */}
         <div
           className="shrink-0 w-4 h-4 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-          title="Drag to reorder"
+          title="کشیدن برای تغییر ترتیب"
           onMouseDown={(e) => {
             // Prevent any interference with drag start
             e.stopPropagation();
@@ -190,7 +182,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
               onClick={handleEdit}
               disabled={isUpdating}
               className="p-1 text-gray-400 hover:text-primary-600 transition-colors duration-200"
-              title="Edit"
+              title="ویرایش"
             >
               <svg
                 className="w-4 h-4"
@@ -212,7 +204,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
             onClick={handleDelete}
             disabled={isUpdating}
             className="p-1 text-gray-400 hover:text-danger-600 transition-colors duration-200"
-            title="Delete"
+            title="حذف"
           >
             <svg
               className="w-4 h-4"
@@ -237,15 +229,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
           <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteTodoDialog
-        isOpen={showDeleteDialog}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        todo={todo}
-        isLoading={isUpdating}
-      />
     </div>
   );
 };

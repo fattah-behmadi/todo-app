@@ -19,7 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("خطا در کامپوننت:", error, errorInfo);
+    console.error("Component error:", error, errorInfo);
   }
 
   public render() {
@@ -43,17 +43,17 @@ export class ErrorBoundary extends Component<Props, State> {
               </svg>
             </div>
             <h1 className="text-xl font-semibold text-gray-900 mb-2">
-              خطایی رخ داده است
+              An error has occurred
             </h1>
             <p className="text-gray-600 mb-4">
-              متأسفانه مشکلی در برنامه پیش آمده است. لطفاً صفحه را مجدداً
-              بارگذاری کنید.
+              Unfortunately, there was a problem with the application. Please
+              reload the page.
             </p>
             <button
               onClick={() => window.location.reload()}
               className="btn-primary"
             >
-              بارگذاری مجدد
+              Reload
             </button>
           </div>
         </div>

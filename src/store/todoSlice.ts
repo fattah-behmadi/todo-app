@@ -1,11 +1,11 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Todo } from '../types/todo';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Todo } from "../types/todo.types";
 
 interface TodoState {
   todos: Todo[];
   loading: boolean;
   error: string | null;
-  filter: 'all' | 'completed' | 'incomplete';
+  filter: "all" | "completed" | "incomplete";
   searchQuery: string;
 }
 
@@ -13,12 +13,12 @@ const initialState: TodoState = {
   todos: [],
   loading: false,
   error: null,
-  filter: 'all',
-  searchQuery: '',
+  filter: "all",
+  searchQuery: "",
 };
 
 const todoSlice = createSlice({
-  name: 'todos',
+  name: "todos",
   initialState,
   reducers: {
     setTodos: (state, action: PayloadAction<Todo[]>) => {
@@ -30,16 +30,18 @@ const todoSlice = createSlice({
       state.todos.unshift(action.payload);
     },
     updateTodo: (state, action: PayloadAction<Todo>) => {
-      const index = state.todos.findIndex(todo => todo.id === action.payload.id);
+      const index = state.todos.findIndex(
+        (todo) => todo.id === action.payload.id
+      );
       if (index !== -1) {
         state.todos[index] = action.payload;
       }
     },
     deleteTodo: (state, action: PayloadAction<number>) => {
-      state.todos = state.todos.filter(todo => todo.id !== action.payload);
+      state.todos = state.todos.filter((todo) => todo.id !== action.payload);
     },
     toggleTodoStatus: (state, action: PayloadAction<number>) => {
-      const todo = state.todos.find(t => t.id === action.payload);
+      const todo = state.todos.find((t) => t.id === action.payload);
       if (todo) {
         todo.completed = !todo.completed;
       }
@@ -51,13 +53,19 @@ const todoSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
-    setFilter: (state, action: PayloadAction<'all' | 'completed' | 'incomplete'>) => {
+    setFilter: (
+      state,
+      action: PayloadAction<"all" | "completed" | "incomplete">
+    ) => {
       state.filter = action.payload;
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
-    reorderTodos: (state, action: PayloadAction<{ startIndex: number; endIndex: number }>) => {
+    reorderTodos: (
+      state,
+      action: PayloadAction<{ startIndex: number; endIndex: number }>
+    ) => {
       const { startIndex, endIndex } = action.payload;
       const [removed] = state.todos.splice(startIndex, 1);
       state.todos.splice(endIndex, 0, removed);

@@ -1,6 +1,6 @@
 import React from "react";
 import { Dialog } from "./Dialog";
-import { Todo } from "../types/todo";
+import { Todo } from "../types/todo.types";
 
 export interface DeleteTodoDialogProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export const DeleteTodoDialog: React.FC<DeleteTodoDialogProps> = ({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title="حذف Todo"
+      title="Delete Todo"
       showCloseButton={true}
       closeOnBackdropClick={!isLoading}
       closeOnEsc={!isLoading}
@@ -54,7 +54,7 @@ export const DeleteTodoDialog: React.FC<DeleteTodoDialogProps> = ({
         {/* Message */}
         <div className="text-center space-y-2">
           <p className="text-gray-900 font-medium">
-            آیا مطمئن هستید که می‌خواهید این Todo را حذف کنید؟
+            Are you sure you want to delete this Todo?
           </p>
           {todo && (
             <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
@@ -63,17 +63,17 @@ export const DeleteTodoDialog: React.FC<DeleteTodoDialogProps> = ({
               </p>
             </div>
           )}
-          <p className="text-sm text-gray-500">این عمل قابل بازگشت نیست.</p>
+          <p className="text-sm text-gray-500">This action cannot be undone.</p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 space-x-3 space-x-reverse pt-2">
+        <div className="flex gap-4 pt-2">
           <button
             onClick={onClose}
             disabled={isLoading}
             className="flex-1 btn-secondary"
           >
-            انصراف
+            Cancel
           </button>
           <button
             onClick={handleConfirm}
@@ -82,13 +82,13 @@ export const DeleteTodoDialog: React.FC<DeleteTodoDialogProps> = ({
           >
             {isLoading ? (
               <>
-                <span className="opacity-0">حذف</span>
+                <span className="opacity-0">Delete</span>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </>
             ) : (
-              "حذف"
+              "Delete"
             )}
           </button>
         </div>

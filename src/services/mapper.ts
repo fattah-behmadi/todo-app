@@ -1,5 +1,9 @@
-import { Todo, CreateTodoRequest, UpdateTodoRequest } from '../types/todo';
-import { CreateTodoInput, UpdateTodoInput } from '../types/validation';
+import {
+  Todo,
+  CreateTodoRequest,
+  UpdateTodoRequest,
+} from "../types/todo.types";
+import { CreateTodoInput, UpdateTodoInput } from "../types/validation";
 
 export class TodoMapper {
   static toCreateRequest(input: CreateTodoInput): CreateTodoRequest {
@@ -12,15 +16,15 @@ export class TodoMapper {
 
   static toUpdateRequest(input: UpdateTodoInput): UpdateTodoRequest {
     const request: UpdateTodoRequest = {};
-    
+
     if (input.todo !== undefined) {
       request.todo = input.todo;
     }
-    
+
     if (input.completed !== undefined) {
       request.completed = input.completed;
     }
-    
+
     return request;
   }
 
@@ -45,7 +49,7 @@ export class TodoMapper {
     try {
       return JSON.parse(stored);
     } catch {
-      throw new Error('خطا در خواندن داده از حافظه محلی');
+      throw new Error("Error reading data from local storage");
     }
   }
 }
