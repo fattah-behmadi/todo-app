@@ -57,7 +57,6 @@ export const TodoList: React.FC = () => {
 
       if (over && active.id !== over.id) {
         const draggedTodo = sortedTodos.find((todo) => todo.id === active.id);
-        console.log("🚀 ~ TodoList ~ draggedTodo:", draggedTodo);
 
         if (draggedTodo) {
           // Check if dropped on a container (empty column)

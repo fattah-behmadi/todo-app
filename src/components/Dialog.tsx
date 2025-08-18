@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { CloseIcon } from "./icons";
+import "./Dialog.css";
 
 export interface DialogProps {
   isOpen: boolean;
@@ -94,6 +95,7 @@ export const Dialog: React.FC<DialogProps> = ({
         backdrop:bg-opacity-50
         backdrop:backdrop-blur-sm
         open:animate-bounce-in
+        origin-center
         ${className}
       `}
       aria-labelledby={title ? "dialog-title" : undefined}
