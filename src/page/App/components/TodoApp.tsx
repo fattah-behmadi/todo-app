@@ -59,8 +59,18 @@ export const TodoApp: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <div className="text-center mt-12 text-gray-500">
-            <p>Built with ❤️ and React + TypeScript</p>
+          <div className="text-center mt-12 text-gray-500 space-y-2">
+            <p>
+              {"Developed by"}
+              <a
+                href="https://linkedin.com/in/fattah-behmadi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 px-2 text-2xl font-bold"
+              >
+                Fattah Behmadi
+              </a>
+            </p>
           </div>
         </div>
       </div>
