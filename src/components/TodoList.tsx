@@ -31,86 +31,45 @@ export const TodoList: React.FC = () => {
   // Handle drag end callback function
   const handleDragEnd = useCallback(
     async (event: CustomDragEvent) => {
-      console.log("🎯 DRAG END CALLBACK EXECUTED!");
       const { active, over } = event;
-      console.log(
-        "🎯 DRAG END CALLBACK - Active:",
-        active.id,
-        "Over:",
-        over?.id
-      );
 
       if (over && active.id !== over.id) {
         const draggedTodo = sortedTodos.find((todo) => todo.id === active.id);
 
         if (draggedTodo) {
-          console.log("🎯 Found dragged todo:", draggedTodo);
-
           // Check if dropped on a container (empty column)
           if (over.id === "incomplete" || over.id === "completed") {
-            console.log("🎯 DROPPED ON CONTAINER:", over.id);
             const targetCompleted = over.id === "completed";
-            console.log("🎯 Target completed status:", targetCompleted);
-            console.log(
-              "🎯 Current todo completed status:",
-              draggedTodo.completed
-            );
 
             // Only update if the completion status is different
             if (draggedTodo.completed !== targetCompleted) {
-              console.log(
-                "🔄 Changing completion status from",
-                draggedTodo.completed,
-                "to",
-                targetCompleted
-              );
               try {
-                console.log("📞 Calling TodoService.toggleTodoStatus...");
                 const updatedTodo = await TodoService.toggleTodoStatus(
                   draggedTodo.id,
                   targetCompleted
                 );
-                console.log("✅ TodoService returned:", updatedTodo);
                 dispatch(updateTodo(updatedTodo));
-                console.log("✅ Dispatched updateTodo action");
               } catch (error) {
-                console.error("❌ Error in toggleTodoStatus:", error);
+                console.error("Error in toggleTodoStatus:", error);
               }
-            } else {
-              console.log(
-                "ℹ️ No status change needed - already correct status"
-              );
             }
           } else {
             // Find the target todo to determine the drop zone
             const targetTodo = sortedTodos.find((todo) => todo.id === over.id);
 
             if (targetTodo) {
-              console.log("🎯 Found target todo:", targetTodo);
               // Check if dragged to different completion status
               if (draggedTodo.completed !== targetTodo.completed) {
-                console.log(
-                  "🔄 Changing completion status from",
-                  draggedTodo.completed,
-                  "to",
-                  targetTodo.completed
-                );
                 try {
-                  console.log(
-                    "📞 Calling TodoService.toggleTodoStatus for target todo..."
-                  );
                   const updatedTodo = await TodoService.toggleTodoStatus(
                     draggedTodo.id,
                     targetTodo.completed
                   );
-                  console.log("✅ TodoService returned:", updatedTodo);
                   dispatch(updateTodo(updatedTodo));
-                  console.log("✅ Dispatched updateTodo action");
                 } catch (error) {
-                  console.error("❌ Error in toggleTodoStatus:", error);
+                  console.error("Error in toggleTodoStatus:", error);
                 }
               } else {
-                console.log("🔄 Reordering within same column");
                 // Reorder within the same column
                 const oldIndex = sortedTodos.findIndex(
                   (todo) => todo.id === active.id
@@ -120,26 +79,14 @@ export const TodoList: React.FC = () => {
                 );
 
                 if (oldIndex !== -1 && newIndex !== -1) {
-                  console.log(
-                    "🔄 Reordering from index",
-                    oldIndex,
-                    "to",
-                    newIndex
-                  );
                   dispatch(
                     reorderTodos({ startIndex: oldIndex, endIndex: newIndex })
                   );
                 }
               }
-            } else {
-              console.log("❌ Target todo not found for ID:", over.id);
             }
           }
-        } else {
-          console.log("❌ Dragged todo not found for ID:", active.id);
         }
-      } else {
-        console.log("❌ Invalid drop event - over:", over, "active:", active);
       }
     },
     [sortedTodos, dispatch]

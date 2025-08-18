@@ -29,7 +29,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index }) => {
       );
       dispatch(updateTodo(updatedTodo));
     } catch (error) {
-      console.error("خطا در تغییر وضعیت:", error);
+      console.error("Error changing status:", error);
     } finally {
       setIsUpdating(false);
     }
@@ -42,7 +42,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index }) => {
         await TodoService.deleteTodo(todo.id);
         dispatch(deleteTodo(todo.id));
       } catch (error) {
-        console.error("خطا در حذف:", error);
+        console.error("Error deleting:", error);
       } finally {
         setIsUpdating(false);
       }
@@ -65,7 +65,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index }) => {
         dispatch(updateTodo(updatedTodo));
         setIsEditing(false);
       } catch (error) {
-        console.error("خطا در به‌روزرسانی:", error);
+        console.error("Error updating:", error);
       } finally {
         setIsUpdating(false);
       }
