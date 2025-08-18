@@ -1,22 +1,24 @@
-import { Todo, CreateTodoRequest, UpdateTodoRequest, TodosResponse } from '../types/todo';
-import { CreateTodoInput, UpdateTodoInput } from '../types/validation';
-import { apiProxy } from './apiProxy';
-import { TodoMapper } from './mapper';
+import { Todo, TodosResponse } from "../types/todo";
+import { CreateTodoInput, UpdateTodoInput } from "../types/validation";
+import { apiProxy } from "./apiProxy";
+import { TodoMapper } from "./mapper";
 
 export class TodoService {
   private static readonly ENDPOINTS = {
-    GET_ALL: '/todos',
-    CREATE: '/todos/add',
+    GET_ALL: "/todos",
+    CREATE: "/todos/add",
     UPDATE: (id: number) => `/todos/${id}`,
     DELETE: (id: number) => `/todos/${id}`,
   };
 
   static async getAllTodos(): Promise<Todo[]> {
     try {
-      const response = await apiProxy.get<TodosResponse>(this.ENDPOINTS.GET_ALL);
+      const response = await apiProxy.get<TodosResponse>(
+        this.ENDPOINTS.GET_ALL
+      );
       return TodoMapper.fromApiResponseList(response.todos);
     } catch (error) {
-      console.error('خطا در دریافت Todos:', error);
+      console.error("خطا در دریافت Todos:", error);
       throw error;
     }
   }
@@ -24,10 +26,13 @@ export class TodoService {
   static async createTodo(input: CreateTodoInput): Promise<Todo> {
     try {
       const request = TodoMapper.toCreateRequest(input);
-      const response = await apiProxy.post<Todo>(this.ENDPOINTS.CREATE, request);
+      const response = await apiProxy.post<Todo>(
+        this.ENDPOINTS.CREATE,
+        request
+      );
       return TodoMapper.fromApiResponse(response);
     } catch (error) {
-      console.error('خطا در ایجاد Todo:', error);
+      console.error("خطا در ایجاد Todo:", error);
       throw error;
     }
   }
@@ -35,10 +40,13 @@ export class TodoService {
   static async updateTodo(id: number, input: UpdateTodoInput): Promise<Todo> {
     try {
       const request = TodoMapper.toUpdateRequest(input);
-      const response = await apiProxy.patch<Todo>(this.ENDPOINTS.UPDATE(id), request);
+      const response = await apiProxy.patch<Todo>(
+        this.ENDPOINTS.UPDATE(id),
+        request
+      );
       return TodoMapper.fromApiResponse(response);
     } catch (error) {
-      console.error('خطا در به‌روزرسانی Todo:', error);
+      console.error("خطا در به‌روزرسانی Todo:", error);
       throw error;
     }
   }
@@ -48,7 +56,7 @@ export class TodoService {
       await apiProxy.delete(this.ENDPOINTS.DELETE(id));
       return true;
     } catch (error) {
-      console.error('خطا در حذف Todo:', error);
+      console.error("خطا در حذف Todo:", error);
       throw error;
     }
   }
