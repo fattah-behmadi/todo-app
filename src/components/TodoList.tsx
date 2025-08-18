@@ -7,8 +7,7 @@ import { useAppDispatch } from "../hooks/useAppDispatch";
 import { updateTodo } from "../store/todoSlice";
 import { TodoService } from "../services/todoService";
 import { AddTodoForm } from "./AddTodoForm";
-import { useDragAndDrop } from "../hooks/useDragAndDrop";
-import { CustomDragEvent } from "../utils/dragAndDrop";
+import { useDragAndDrop, CustomDragEvent } from "../plugin/Dnd-JS";
 
 export const TodoList: React.FC = () => {
   const dispatch = useAppDispatch();

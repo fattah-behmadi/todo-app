@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
-import { dragAndDropManager, CustomDragEvent } from "../utils/dragAndDrop";
+import { dragAndDropManager } from "./dragAndDrop";
+import { CustomDragEvent } from "./dragAndDrop.type";
 
 export const useDragAndDrop = () => {
   const containerRefs = useRef<Map<string, HTMLElement>>(new Map());

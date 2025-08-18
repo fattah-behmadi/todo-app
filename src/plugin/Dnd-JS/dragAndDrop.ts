@@ -1,21 +1,4 @@
-export interface CustomDragEvent {
-  active: {
-    id: string | number;
-    rect: DOMRect;
-  };
-  over: {
-    id: string | number;
-    rect: DOMRect;
-  } | null;
-}
-
-export interface DragState {
-  isDragging: boolean;
-  draggedId: string | number | null;
-  draggedElement: HTMLElement | null;
-  originalPosition: { x: number; y: number } | null;
-  placeholder: HTMLElement | null;
-}
+import { CustomDragEvent, DragState } from "./dragAndDrop.type";
 
 class DragAndDropManager {
   private state: DragState = {
@@ -46,7 +29,7 @@ class DragAndDropManager {
       document.addEventListener("dragover", this.globalDragOverHandler);
 
       // Add global drop handler for debugging
-      this.globalDropHandler = (e: DragEvent) => {
+      this.globalDropHandler = (_e: DragEvent) => {
         // Don't prevent default here to allow container handlers to work
         // e.preventDefault();
       };
@@ -177,7 +160,7 @@ class DragAndDropManager {
       }
     };
 
-    const dragLeaveHandler = (e: DragEvent) => {
+    const dragLeaveHandler = (_e: DragEvent) => {
       container.classList.remove("drag-over");
     };
 
@@ -217,7 +200,7 @@ class DragAndDropManager {
       element.style.zIndex = "1000";
     };
 
-    const dragEndHandler = (e: DragEvent) => {
+    const dragEndHandler = (_e: DragEvent) => {
       // Reset styles
       if (this.state.draggedElement) {
         this.state.draggedElement.style.opacity = "";
