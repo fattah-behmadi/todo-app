@@ -1,6 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
-import { WarningIcon } from "../../../components/icons";
-import { Button, Card } from "../../../components/base";
+import { WarningIcon } from "@/components/icons";
+import { Button, Card } from "@/components/base";
 
 interface Props {
   children: ReactNode;

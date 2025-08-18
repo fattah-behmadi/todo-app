@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Input } from "../../../components/base";
+import { Card, Button, Input } from "@/components/base";
 import { useAppStore } from "../useAppStore";
 
 export const AddTodoForm: React.FC = () => {

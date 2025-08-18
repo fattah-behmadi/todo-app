@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { useAppSelector } from "../../../store/useAppSelector";
+import { useAppSelector } from "@/store/useAppSelector";
 import { TodoFilters } from "./TodoFilters";
 import { TodoList } from "./TodoList";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { WarningIcon } from "../../../components/icons";
-import { Button, Card } from "../../../components/base";
+import { WarningIcon } from "@/components/icons";
+import { Button, Card } from "@/components/base";
 import { useAppStore } from "../useAppStore";
 
 export const TodoApp: React.FC = () => {

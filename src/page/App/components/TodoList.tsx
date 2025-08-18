@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useAppSelector } from "../../../store/useAppSelector";
-import { filterTodos, sortTodos } from "../../../utils/todoUtils";
+import { useAppSelector } from "@/store/useAppSelector";
+import { filterTodos, sortTodos } from "@/utils/todoUtils";
 import { TodoItem } from "./TodoItem";
 import { useAppStore } from "../useAppStore";
 import { AddTodoForm } from "./AddTodoForm";
-import { useDragAndDrop, CustomDragEvent } from "../../../plugin/Dnd-JS";
+import { useDragAndDrop, CustomDragEvent } from "@/plugin/Dnd-JS";
 import { Loading } from "@/components/Loading";
-import { ClipboardIcon } from "../../../components/icons";
+import { ClipboardIcon } from "@/components/icons";
 
 export const TodoList: React.FC = () => {
-  const { updateTodoText, toggleTodo } = useAppStore();
+  const { toggleTodo } = useAppStore();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const { todos, filter, searchQuery, loading } = useAppSelector(
     (state) => state.todos

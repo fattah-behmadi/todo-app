@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Todo } from "../../../types/todo.types";
-import { useDragAndDrop } from "../../../plugin/Dnd-JS";
-import { DeleteTodoDialog } from "../../../components";
+import { Todo } from "@/types/todo.types";
+import { useDragAndDrop } from "@/plugin/Dnd-JS";
+import { DeleteTodoDialog } from "@/components";
 import { useAppStore } from "../useAppStore";
 import {
   DragHandleIcon,
   CheckIcon,
   EditIcon,
   DeleteIcon,
-} from "../../../components/icons";
-import { Spinner } from "../../../components/base";
+} from "@/components/icons";
+import { Spinner } from "@/components/base";
 
 interface TodoItemProps {
   todo: Todo;

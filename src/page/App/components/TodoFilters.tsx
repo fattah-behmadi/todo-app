@@ -1,20 +1,14 @@
 import React from "react";
-import { useAppSelector } from "../../../store/useAppSelector";
-import { setFilter, setSearchQuery } from "../../../store/todoSlice";
+import { useAppSelector } from "@/store/useAppSelector";
+import { setFilter, setSearchQuery } from "@/store/todoSlice";
 import {
   getCompletedCount,
   getIncompleteCount,
   getTotalCount,
-} from "../../../utils/todoUtils";
-import { useAppDispatch } from "../../../store/useAppDispatch";
-import { SearchIcon } from "../../../components/icons";
-import {
-  Card,
-  Button,
-  Input,
-  ProgressBar,
-  Badge,
-} from "../../../components/base";
+} from "@/utils/todoUtils";
+import { useAppDispatch } from "@/store/useAppDispatch";
+import { SearchIcon } from "@/components/icons";
+import { Card, Button, Input, ProgressBar, Badge } from "@/components/base";
 
 export const TodoFilters: React.FC = () => {
   const dispatch = useAppDispatch();
