@@ -24,8 +24,8 @@ export const useAppStore = () => {
         try {
           dispatch(setLoading(true));
           const todosData = await TodoService.getAllTodos();
-          dispatch(setTodos(todosData));
-          return todosData;
+          dispatch(setTodos(todosData.todos));
+          return todosData.todos;
         } catch (error: any) {
           const errorMessage = error.message || "Error fetching Todos";
           dispatch(setError(errorMessage));
@@ -48,7 +48,7 @@ export const useAppStore = () => {
         queryKey: ["todos"],
         queryFn: async () => {
           const data = await TodoService.getAllTodos();
-          return data;
+          return data.todos;
         },
         staleTime: 1000 * 60 * 5,
       });

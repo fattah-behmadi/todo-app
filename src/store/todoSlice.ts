@@ -26,6 +26,9 @@ const todoSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    addTodos: (state, action: PayloadAction<Todo[]>) => {
+      state.todos = [...state.todos, ...action.payload];
+    },
     addTodo: (state, action: PayloadAction<Todo>) => {
       state.todos.unshift(action.payload);
     },
@@ -78,6 +81,7 @@ const todoSlice = createSlice({
 
 export const {
   setTodos,
+  addTodos,
   addTodo,
   updateTodo,
   deleteTodo,

@@ -11,12 +11,20 @@ export class TodoService {
     DELETE: (id: number) => `/todos/${id}`,
   };
 
-  static async getAllTodos(): Promise<Todo[]> {
+  static async getAllTodos(
+    skip: number = 0,
+    limit: number = 30
+  ): Promise<TodosResponse> {
     try {
       const response = await apiProxy.get<TodosResponse>(
-        this.ENDPOINTS.GET_ALL
+        `${this.ENDPOINTS.GET_ALL}?skip=${skip}&limit=${limit}`
       );
-      return TodoMapper.fromApiResponseList(response.todos);
+      return {
+        todos: TodoMapper.fromApiResponseList(response.todos),
+        total: response.total,
+        skip: response.skip,
+        limit: response.limit,
+      };
     } catch (error) {
       console.error("Error fetching Todos:", error);
       throw error;

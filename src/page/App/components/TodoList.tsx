@@ -7,19 +7,30 @@ import { AddTodoForm } from "./AddTodoForm";
 import { useDragAndDrop, CustomDragEvent } from "@/plugin/Dnd-JS";
 import { Loading } from "@/components/Loading";
 import { ClipboardIcon } from "@/components/icons";
+import { usePaginatedTodos } from "@/hooks/usePaginatedTodos";
+import { Spinner } from "@/components/base/Spinner";
 
 export const TodoList: React.FC = () => {
   const { toggleTodo } = useAppStore();
   const [showDialog, setShowDialog] = useState<boolean>(false);
-  const { todos, filter, searchQuery, loading } = useAppSelector(
+  const {
+    todos: paginatedTodos,
+    isLoading,
+    hasMore,
+    loadMore,
+  } = usePaginatedTodos();
+  const { filter, searchQuery, loading } = useAppSelector(
     (state) => state.todos
   );
+
+  const incompleteContainerScrollRef = useRef<HTMLDivElement>(null);
+  const completedContainerScrollRef = useRef<HTMLDivElement>(null);
 
   const incompleteContainerRef = useRef<HTMLDivElement>(null);
   const completedContainerRef = useRef<HTMLDivElement>(null);
   const { registerContainer, setDragEndCallback } = useDragAndDrop();
 
-  const filteredTodos = filterTodos(todos, filter, searchQuery);
+  const filteredTodos = filterTodos(paginatedTodos, filter, searchQuery);
   const sortedTodos = sortTodos(filteredTodos);
 
   // Separate todos based on status
@@ -41,11 +52,7 @@ export const TodoList: React.FC = () => {
 
             // Only update if the completion status is different
             if (draggedTodo.completed !== targetCompleted) {
-              try {
-                await toggleTodo(draggedTodo.id, targetCompleted);
-              } catch (error) {
-                console.error("Error in toggleTodoStatus:", error);
-              }
+              await toggleTodo(draggedTodo.id, targetCompleted);
             }
           } else {
             // Find the target todo to determine the drop zone
@@ -54,11 +61,7 @@ export const TodoList: React.FC = () => {
             if (targetTodo) {
               // Check if dragged to different completion status
               if (draggedTodo.completed !== targetTodo.completed) {
-                try {
-                  await toggleTodo(draggedTodo.id, targetTodo.completed);
-                } catch (error) {
-                  console.error("Error in toggleTodoStatus:", error);
-                }
+                await toggleTodo(draggedTodo.id, targetTodo.completed);
               }
             }
           }
@@ -80,6 +83,63 @@ export const TodoList: React.FC = () => {
     // Set the drag end callback
     setDragEndCallback(handleDragEnd);
   }, [registerContainer, setDragEndCallback, handleDragEnd]);
+
+  // Scroll event handler for pagination
+  const handleScroll = useCallback(
+    (ref: React.RefObject<HTMLDivElement | null>) => {
+      let isLoading = false;
+      return () => {
+        if (!ref.current || isLoading) return;
+
+        const { scrollTop, clientHeight, scrollHeight } = ref.current;
+        const scrollThreshold = 200;
+
+        const isNearBottom =
+          scrollHeight - scrollTop - clientHeight <= scrollThreshold;
+
+        if (isNearBottom && hasMore && !isLoading) {
+          isLoading = true;
+
+          const currentScrollTop = ref.current.scrollTop;
+
+          loadMore()
+            .then(() => {
+              if (ref.current) ref.current.scrollTop = currentScrollTop;
+              isLoading = false;
+            })
+            .catch(() => {
+              isLoading = false;
+            });
+        }
+      };
+    },
+    [hasMore, loadMore]
+  );
+
+  // Add scroll event listeners
+  useEffect(() => {
+    const incompleteRef = incompleteContainerScrollRef.current;
+    const completedRef = completedContainerScrollRef.current;
+
+    const incompleteScrollHandler = handleScroll(incompleteContainerScrollRef);
+    const completedScrollHandler = handleScroll(completedContainerScrollRef);
+
+    if (incompleteRef) {
+      incompleteRef.addEventListener("scroll", incompleteScrollHandler);
+    }
+    if (completedRef) {
+      completedRef.addEventListener("scroll", completedScrollHandler);
+    }
+
+    return () => {
+      if (incompleteRef) {
+        incompleteRef.removeEventListener("scroll", incompleteScrollHandler);
+      }
+      if (completedRef) {
+        completedRef.removeEventListener("scroll", completedScrollHandler);
+      }
+    };
+  }, [handleScroll, incompleteContainerScrollRef, completedContainerScrollRef]);
 
   if (loading) return <Loading />;
 
@@ -139,10 +199,14 @@ export const TodoList: React.FC = () => {
             All tasks completed! 🎉
           </div>
         ) : (
-          <div className={`space-y-3 ${scrollColumn}`}>
+          <div
+            ref={incompleteContainerScrollRef}
+            className={`space-y-3 ${scrollColumn}`}
+          >
             {incompleteTodos.map((todo, index) => (
               <TodoItem key={todo.id} todo={todo} index={index} />
             ))}
+            {isLoading && <Spinner />}
           </div>
         )}
       </div>
@@ -164,10 +228,14 @@ export const TodoList: React.FC = () => {
             No tasks have been completed yet
           </div>
         ) : (
-          <div className={`space-y-3 ${scrollColumn}`}>
+          <div
+            ref={completedContainerScrollRef}
+            className={`space-y-3 ${scrollColumn}`}
+          >
             {completedTodos.map((todo, index) => (
               <TodoItem key={todo.id} todo={todo} index={index} />
             ))}
+            {isLoading && <Spinner />}
           </div>
         )}
       </div>
