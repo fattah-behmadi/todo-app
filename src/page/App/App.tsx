@@ -1,7 +1,7 @@
 import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { store } from "./store/store";
+import { store } from "../../store/store";
 import { TodoApp } from "./components/TodoApp";
 import "./App.css";
 import "@/plugin/Dnd-JS/style.css";

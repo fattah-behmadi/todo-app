@@ -1,16 +1,16 @@
 import React from "react";
-import {useAppSelector} from "../hooks/useAppSelector";
-import {setFilter, setSearchQuery} from "../store/todoSlice";
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import { setFilter, setSearchQuery } from "../../../store/todoSlice";
 import {
   getCompletedCount,
   getIncompleteCount,
   getTotalCount,
-} from "../utils/todoUtils";
-import {useAppDispatch} from "../hooks/useAppDispatch";
+} from "../../../utils/todoUtils";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
 
 export const TodoFilters: React.FC = () => {
   const dispatch = useAppDispatch();
-  const {todos, filter, searchQuery} = useAppSelector((state) => state.todos);
+  const { todos, filter, searchQuery } = useAppSelector((state) => state.todos);
 
   const totalCount = getTotalCount(todos);
   const completedCount = getCompletedCount(todos);
@@ -40,7 +40,8 @@ export const TodoFilters: React.FC = () => {
                 className="h-5 w-5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24">
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -68,7 +69,8 @@ export const TodoFilters: React.FC = () => {
               filter === "all"
                 ? "bg-primary-100 text-primary-700 border-primary-300"
                 : "hover:bg-gray-300"
-            }`}>
+            }`}
+          >
             همه ({totalCount})
           </button>
 
@@ -78,7 +80,8 @@ export const TodoFilters: React.FC = () => {
               filter === "incomplete"
                 ? "bg-primary-100 text-primary-700 border-primary-300"
                 : "hover:bg-gray-300"
-            }`}>
+            }`}
+          >
             ناتمام ({incompleteCount})
           </button>
 
@@ -88,7 +91,8 @@ export const TodoFilters: React.FC = () => {
               filter === "completed"
                 ? "bg-primary-100 text-primary-700 border-primary-300"
                 : "hover:bg-gray-300"
-            }`}>
+            }`}
+          >
             تکمیل شده ({completedCount})
           </button>
         </div>
@@ -104,7 +108,8 @@ export const TodoFilters: React.FC = () => {
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-success-500 h-2 rounded-full transition-all duration-300"
-              style={{width: `${(completedCount / totalCount) * 100}%`}}></div>
+              style={{ width: `${(completedCount / totalCount) * 100}%` }}
+            ></div>
           </div>
         </div>
       )}

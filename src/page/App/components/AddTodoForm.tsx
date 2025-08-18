@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import {useAppDispatch} from "../hooks/useAppDispatch";
-import {addTodo} from "../store/todoSlice";
-import {TodoService} from "../services/todoService";
-import {CreateTodoSchema, CreateTodoInput} from "../types/validation";
+import React, { useState } from "react";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { addTodo } from "../../../store/todoSlice";
+import { TodoService } from "../../../services/todoService";
+import { CreateTodoSchema, CreateTodoInput } from "../../../types/validation";
 
 export const AddTodoForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -68,7 +68,8 @@ export const AddTodoForm: React.FC = () => {
         <div>
           <label
             htmlFor="todoInput"
-            className="block text-sm font-medium text-gray-700 mb-2">
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             عنوان Todo
           </label>
           <input
@@ -100,7 +101,8 @@ export const AddTodoForm: React.FC = () => {
             isSubmitting || !todoText.trim()
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-primary-700"
-          }`}>
+          }`}
+        >
           {isSubmitting ? (
             <div className="flex items-center justify-center space-x-2 space-x-reverse">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

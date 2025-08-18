@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Todo } from "../types/todo";
-import { useAppDispatch } from "../hooks/useAppDispatch";
-import { updateTodo, deleteTodo } from "../store/todoSlice";
-import { TodoService } from "../services/todoService";
-import { useDragAndDrop } from "../plugin/Dnd-JS";
+import { Todo } from "../../../types/todo";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { updateTodo, deleteTodo } from "../../../store/todoSlice";
+import { TodoService } from "../../../services/todoService";
+import { useDragAndDrop } from "../../../plugin/Dnd-JS";
 
 interface TodoItemProps {
   todo: Todo;

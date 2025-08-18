@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useAppSelector } from "../hooks/useAppSelector";
-import { reorderTodos } from "../store/todoSlice";
-import { filterTodos, sortTodos } from "../utils/todoUtils";
+import { useAppSelector } from "../../../hooks/useAppSelector";
+import { reorderTodos } from "../../../store/todoSlice";
+import { filterTodos, sortTodos } from "../../../utils/todoUtils";
 import { TodoItem } from "./TodoItem";
-import { useAppDispatch } from "../hooks/useAppDispatch";
-import { updateTodo } from "../store/todoSlice";
-import { TodoService } from "../services/todoService";
+import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { updateTodo } from "../../../store/todoSlice";
+import { TodoService } from "../../../services/todoService";
 import { AddTodoForm } from "./AddTodoForm";
-import { useDragAndDrop, CustomDragEvent } from "../plugin/Dnd-JS";
+import { useDragAndDrop, CustomDragEvent } from "../../../plugin/Dnd-JS";
 
 export const TodoList: React.FC = () => {
   const dispatch = useAppDispatch();
