@@ -7,9 +7,9 @@ import { AddTodoForm } from "./AddTodoForm";
 import { useDragAndDrop, CustomDragEvent } from "@/plugin/Dnd-JS";
 import { Loading } from "@/components/Loading";
 import { ClipboardIcon } from "@/components/icons";
-import { usePaginatedTodos } from "@/hooks/usePaginatedTodos";
 import { Spinner } from "@/components/base/Spinner";
 import { useInfinitePagination } from "@/hooks/useInfinitePagination";
+import { useInitialTodoLoad } from "@/hooks/useTodoQuery";
 
 export const TodoList: React.FC = () => {
   const { toggleTodo } = useAppStore();
@@ -19,13 +19,22 @@ export const TodoList: React.FC = () => {
     isLoading,
     hasMore,
     loadMore,
-  } = usePaginatedTodos();
+  } = useInitialTodoLoad();
   const { filter, searchQuery, loading } = useAppSelector(
     (state) => state.todos
   );
 
   const incompleteContainerRef = useRef<HTMLDivElement>(null);
   const completedContainerRef = useRef<HTMLDivElement>(null);
+
+  const { registerContainer, setDragEndCallback } = useDragAndDrop();
+
+  const filteredTodos = filterTodos(paginatedTodos, filter, searchQuery);
+  const sortedTodos = sortTodos(filteredTodos);
+
+  // Separate todos based on status
+  const incompleteTodos = sortedTodos.filter((todo) => !todo.completed);
+  const completedTodos = sortedTodos.filter((todo) => todo.completed);
 
   // Infinite scroll for incomplete todos
   const { containerRef: incompleteContainerScrollRef } = useInfinitePagination({
@@ -40,15 +49,6 @@ export const TodoList: React.FC = () => {
     isLoading,
     loadMore,
   });
-
-  const { registerContainer, setDragEndCallback } = useDragAndDrop();
-
-  const filteredTodos = filterTodos(paginatedTodos, filter, searchQuery);
-  const sortedTodos = sortTodos(filteredTodos);
-
-  // Separate todos based on status
-  const incompleteTodos = sortedTodos.filter((todo) => !todo.completed);
-  const completedTodos = sortedTodos.filter((todo) => todo.completed);
 
   // Handle drag end callback function
   const handleDragEnd = useCallback(

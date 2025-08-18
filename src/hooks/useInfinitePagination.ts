@@ -12,30 +12,49 @@ export const useInfinitePagination = ({
   loadMore,
 }: UseInfinitePaginationProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isLoadingRef = useRef(false);
+  const scrollStateRef = useRef({
+    isLoading: false,
+    beforeLoadScrollTop: 0,
+    beforeLoadScrollHeight: 0,
+    beforeLoadClientHeight: 0,
+  });
 
   const handleScroll = useCallback(() => {
-    if (!containerRef.current || isLoadingRef.current || isLoading) return;
+    if (!containerRef.current || scrollStateRef.current.isLoading || isLoading)
+      return;
 
     const { scrollTop, clientHeight, scrollHeight } = containerRef.current;
+
     const scrollThreshold = 200;
 
     const isNearBottom =
       scrollHeight - scrollTop - clientHeight <= scrollThreshold;
 
     if (isNearBottom && hasMore) {
-      isLoadingRef.current = true;
-      const currentScrollTop = containerRef.current.scrollTop;
+      // Store precise scroll state before loading
+      scrollStateRef.current = {
+        isLoading: true,
+        beforeLoadScrollTop: scrollTop,
+        beforeLoadScrollHeight: scrollHeight,
+        beforeLoadClientHeight: clientHeight,
+      };
 
       loadMore()
         .then(() => {
           if (containerRef.current) {
-            containerRef.current.scrollTop = currentScrollTop;
+            setTimeout(() => {
+              // Restore to the exact previous scroll position
+              containerRef.current!.scrollTop =
+                scrollStateRef.current.beforeLoadScrollTop;
+            }, 100);
           }
-          isLoadingRef.current = false;
         })
-        .catch(() => {
-          isLoadingRef.current = false;
+        .catch((error) => {
+          console.error("Error loading more items:", error);
+        })
+        .finally(() => {
+          // Reset loading state
+          scrollStateRef.current.isLoading = false;
         });
     }
   }, [hasMore, isLoading, loadMore]);

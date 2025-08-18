@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { TodoService } from "@/services/todoService";
 import { useAppDispatch } from "@/store/useAppDispatch";
 import {
@@ -13,19 +17,34 @@ import {
 import { CreateTodoInput, CreateTodoSchema } from "@/types/validation";
 import { Todo } from "@/types/todo.types";
 
+const TODOS_QUERY_KEY = "todos";
+const LIMIT = 30;
+
+interface TodoResponse {
+  pages: { todos: Todo[]; total: number; nextPage?: number }[];
+  pageParams: number[];
+}
+
 export const useAppStore = () => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
   const useTodos = () => {
-    return useQuery<Todo[], Error>({
-      queryKey: ["todos"],
-      queryFn: async () => {
+    return useInfiniteQuery<TodoResponse, Error>({
+      queryKey: [TODOS_QUERY_KEY],
+      queryFn: async ({ pageParam = 0 }) => {
         try {
           dispatch(setLoading(true));
-          const todosData = await TodoService.getAllTodos();
-          dispatch(setTodos(todosData.todos));
-          return todosData.todos;
+          const skip = Number(pageParam) * LIMIT;
+          const response = await TodoService.getAllTodos(skip, LIMIT);
+
+          return {
+            ...response,
+            nextPage:
+              skip + response.todos.length < response.total
+                ? Number(pageParam) + 1
+                : undefined,
+          };
         } catch (error: any) {
           const errorMessage = error.message || "Error fetching Todos";
           dispatch(setError(errorMessage));
@@ -35,6 +54,8 @@ export const useAppStore = () => {
           dispatch(setLoading(false));
         }
       },
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) => lastPage.nextPage,
       staleTime: 1000 * 60 * 5,
       retry: 2,
     });
@@ -44,17 +65,24 @@ export const useAppStore = () => {
     try {
       dispatch(setLoading(true));
 
-      const todosData = await queryClient.fetchQuery<Todo[], Error>({
-        queryKey: ["todos"],
-        queryFn: async () => {
-          const data = await TodoService.getAllTodos();
-          return data.todos;
-        },
+      const todosData = await queryClient.fetchQuery<TodoResponse, Error>({
+        queryKey: [TODOS_QUERY_KEY],
+        queryFn: async () => ({
+          pages: [
+            {
+              ...(await TodoService.getAllTodos(0, LIMIT)),
+              nextPage: 1,
+            },
+          ],
+          pageParams: [0],
+        }),
         staleTime: 1000 * 60 * 5,
       });
 
-      dispatch(setTodos(todosData));
-      return todosData;
+      const items = todosData.pages.flatMap((page) => page.todos);
+
+      dispatch(setTodos(items));
+      return items;
     } catch (error: any) {
       const errorMessage = error.message || "Error fetching Todos";
       dispatch(setError(errorMessage));
@@ -78,9 +106,15 @@ export const useAppStore = () => {
 
       dispatch(addTodo(newTodo));
 
-      queryClient.setQueryData<Todo[]>(["todos"], (oldTodos) =>
-        oldTodos ? [...oldTodos, newTodo] : [newTodo]
-      );
+      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
+        if (!oldData) return { todos: [newTodo], total: 1 };
+
+        return {
+          ...oldData,
+          todos: [...oldData.todos, newTodo],
+          total: oldData.total + 1,
+        };
+      });
 
       return newTodo;
     } catch (error: any) {
@@ -98,13 +132,16 @@ export const useAppStore = () => {
 
       dispatch(updateTodo(updatedTodo));
 
-      queryClient.setQueryData<Todo[]>(
-        ["todos"],
-        (oldTodos) =>
-          oldTodos?.map((todo) =>
+      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
+        if (!oldData) return { todos: [], total: 0 };
+
+        return {
+          ...oldData,
+          todos: oldData.todos.map((todo) =>
             todo.id === updatedTodo.id ? updatedTodo : todo
-          ) || []
-      );
+          ),
+        };
+      });
 
       return updatedTodo;
     } catch (error) {
@@ -119,13 +156,16 @@ export const useAppStore = () => {
 
       dispatch(toggleTodoStatus(todoId));
 
-      queryClient.setQueryData<Todo[]>(
-        ["todos"],
-        (oldTodos) =>
-          oldTodos?.map((todo) =>
+      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
+        if (!oldData) return { todos: [], total: 0 };
+
+        return {
+          ...oldData,
+          todos: oldData.todos.map((todo) =>
             todo.id === updatedTodo.id ? updatedTodo : todo
-          ) || []
-      );
+          ),
+        };
+      });
 
       return updatedTodo;
     } catch (error) {
@@ -140,10 +180,15 @@ export const useAppStore = () => {
 
       dispatch(deleteTodo(todoId));
 
-      queryClient.setQueryData<Todo[]>(
-        ["todos"],
-        (oldTodos) => oldTodos?.filter((todo) => todo.id !== todoId) || []
-      );
+      queryClient.setQueryData<TodoResponse>([TODOS_QUERY_KEY], (oldData) => {
+        if (!oldData) return { todos: [], total: 0 };
+
+        return {
+          ...oldData,
+          todos: oldData.todos.filter((todo) => todo.id !== todoId),
+          total: oldData.total - 1,
+        };
+      });
     } catch (error) {
       console.error("Error deleting Todo:", error);
       throw error;
