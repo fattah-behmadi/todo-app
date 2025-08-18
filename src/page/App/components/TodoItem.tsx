@@ -5,6 +5,12 @@ import { updateTodo, deleteTodo } from "../../../store/todoSlice";
 import { TodoService } from "../../../services/todoService";
 import { useDragAndDrop } from "../../../plugin/Dnd-JS";
 import { DeleteTodoDialog } from "../../../components";
+import {
+  DragHandleIcon,
+  CheckIcon,
+  EditIcon,
+  DeleteIcon,
+} from "../../../components/icons";
 
 interface TodoItemProps {
   todo: Todo;
@@ -119,16 +125,13 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
       <div className="flex items-center space-x-3 space-x-reverse">
         {/* Drag Handle */}
         <div
-          className="shrink-0 w-4 h-4 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-          title="Drag to reorder"
+          className="shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
           onMouseDown={(e) => {
             // Prevent any interference with drag start
             e.stopPropagation();
           }}
         >
-          <svg fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 6a2 2 0 11-4 0 2 2 0 014 0zM8 12a2 2 0 11-4 0 2 2 0 014 0zM8 18a2 2 0 11-4 0 2 2 0 014 0zM20 6a2 2 0 11-4 0 2 2 0 014 0zM20 12a2 2 0 11-4 0 2 2 0 014 0zM20 18a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
+          <DragHandleIcon />
         </div>
 
         {/* Checkbox */}
@@ -141,19 +144,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
               : "border-gray-300 hover:border-primary-400"
           } ${isUpdating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         >
-          {todo.completed && (
-            <svg
-              className="w-3 h-3 mx-auto"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
+          {todo.completed && <CheckIcon className="w-3 h-3 mx-auto" />}
         </button>
 
         {/* Todo Text */}
@@ -190,21 +181,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
               onClick={handleEdit}
               disabled={isUpdating}
               className="p-1 text-gray-400 hover:text-primary-600 transition-colors duration-200"
-              title="Edit"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <EditIcon />
             </button>
           )}
 
@@ -212,21 +190,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, index: _index }) => {
             onClick={handleDelete}
             disabled={isUpdating}
             className="p-1 text-gray-400 hover:text-danger-600 transition-colors duration-200"
-            title="Delete"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
+            <DeleteIcon />
           </button>
         </div>
       </div>

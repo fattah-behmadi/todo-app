@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { CloseIcon } from "./icons";
 
 export interface DialogProps {
   isOpen: boolean;
@@ -116,19 +117,7 @@ export const Dialog: React.FC<DialogProps> = ({
                 aria-label="Close"
                 type="button"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <CloseIcon />
               </button>
             )}
           </div>
