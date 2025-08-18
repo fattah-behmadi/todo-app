@@ -9,6 +9,7 @@ import { Loading } from "@/components/Loading";
 import { ClipboardIcon } from "@/components/icons";
 import { usePaginatedTodos } from "@/hooks/usePaginatedTodos";
 import { Spinner } from "@/components/base/Spinner";
+import { useInfinitePagination } from "@/hooks/useInfinitePagination";
 
 export const TodoList: React.FC = () => {
   const { toggleTodo } = useAppStore();
@@ -23,11 +24,23 @@ export const TodoList: React.FC = () => {
     (state) => state.todos
   );
 
-  const incompleteContainerScrollRef = useRef<HTMLDivElement>(null);
-  const completedContainerScrollRef = useRef<HTMLDivElement>(null);
-
   const incompleteContainerRef = useRef<HTMLDivElement>(null);
   const completedContainerRef = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll for incomplete todos
+  const { containerRef: incompleteContainerScrollRef } = useInfinitePagination({
+    hasMore,
+    isLoading,
+    loadMore,
+  });
+
+  // Infinite scroll for completed todos
+  const { containerRef: completedContainerScrollRef } = useInfinitePagination({
+    hasMore,
+    isLoading,
+    loadMore,
+  });
+
   const { registerContainer, setDragEndCallback } = useDragAndDrop();
 
   const filteredTodos = filterTodos(paginatedTodos, filter, searchQuery);
@@ -83,63 +96,6 @@ export const TodoList: React.FC = () => {
     // Set the drag end callback
     setDragEndCallback(handleDragEnd);
   }, [registerContainer, setDragEndCallback, handleDragEnd]);
-
-  // Scroll event handler for pagination
-  const handleScroll = useCallback(
-    (ref: React.RefObject<HTMLDivElement | null>) => {
-      let isLoading = false;
-      return () => {
-        if (!ref.current || isLoading) return;
-
-        const { scrollTop, clientHeight, scrollHeight } = ref.current;
-        const scrollThreshold = 200;
-
-        const isNearBottom =
-          scrollHeight - scrollTop - clientHeight <= scrollThreshold;
-
-        if (isNearBottom && hasMore && !isLoading) {
-          isLoading = true;
-
-          const currentScrollTop = ref.current.scrollTop;
-
-          loadMore()
-            .then(() => {
-              if (ref.current) ref.current.scrollTop = currentScrollTop;
-              isLoading = false;
-            })
-            .catch(() => {
-              isLoading = false;
-            });
-        }
-      };
-    },
-    [hasMore, loadMore]
-  );
-
-  // Add scroll event listeners
-  useEffect(() => {
-    const incompleteRef = incompleteContainerScrollRef.current;
-    const completedRef = completedContainerScrollRef.current;
-
-    const incompleteScrollHandler = handleScroll(incompleteContainerScrollRef);
-    const completedScrollHandler = handleScroll(completedContainerScrollRef);
-
-    if (incompleteRef) {
-      incompleteRef.addEventListener("scroll", incompleteScrollHandler);
-    }
-    if (completedRef) {
-      completedRef.addEventListener("scroll", completedScrollHandler);
-    }
-
-    return () => {
-      if (incompleteRef) {
-        incompleteRef.removeEventListener("scroll", incompleteScrollHandler);
-      }
-      if (completedRef) {
-        completedRef.removeEventListener("scroll", completedScrollHandler);
-      }
-    };
-  }, [handleScroll, incompleteContainerScrollRef, completedContainerScrollRef]);
 
   if (loading) return <Loading />;
 
