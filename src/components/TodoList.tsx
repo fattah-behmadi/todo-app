@@ -1,41 +1,25 @@
-import React, {useState} from "react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-  DragOverEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import {useAppSelector} from "../hooks/useAppSelector";
-import {reorderTodos} from "../store/todoSlice";
-import {filterTodos, sortTodos} from "../utils/todoUtils";
-import {SortableTodoItem} from "./SortableTodoItem";
-import {useAppDispatch} from "../hooks/useAppDispatch";
-import {updateTodo} from "../store/todoSlice";
-import {TodoService} from "../services/todoService";
-import {AddTodoForm} from "./AddTodoForm";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { reorderTodos } from "../store/todoSlice";
+import { filterTodos, sortTodos } from "../utils/todoUtils";
+import { TodoItem } from "./TodoItem";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { updateTodo } from "../store/todoSlice";
+import { TodoService } from "../services/todoService";
+import { AddTodoForm } from "./AddTodoForm";
+import { useDragAndDrop } from "../hooks/useDragAndDrop";
+import { CustomDragEvent } from "../utils/dragAndDrop";
 
 export const TodoList: React.FC = () => {
   const dispatch = useAppDispatch();
   const [showDialog, setShowDialog] = useState<boolean>(false);
-  const {todos, filter, searchQuery, loading} = useAppSelector(
+  const { todos, filter, searchQuery, loading } = useAppSelector(
     (state) => state.todos
   );
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const incompleteContainerRef = useRef<HTMLDivElement>(null);
+  const completedContainerRef = useRef<HTMLDivElement>(null);
+  const { registerContainer, setDragEndCallback } = useDragAndDrop();
 
   const filteredTodos = filterTodos(todos, filter, searchQuery);
   const sortedTodos = sortTodos(filteredTodos);
@@ -44,59 +28,135 @@ export const TodoList: React.FC = () => {
   const incompleteTodos = sortedTodos.filter((todo) => !todo.completed);
   const completedTodos = sortedTodos.filter((todo) => todo.completed);
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const {active, over} = event;
+  // Handle drag end callback function
+  const handleDragEnd = useCallback(
+    async (event: CustomDragEvent) => {
+      console.log("🎯 DRAG END CALLBACK EXECUTED!");
+      const { active, over } = event;
+      console.log(
+        "🎯 DRAG END CALLBACK - Active:",
+        active.id,
+        "Over:",
+        over?.id
+      );
 
-    if (over && active.id !== over.id) {
-      const draggedTodo = sortedTodos.find((todo) => todo.id === active.id);
+      if (over && active.id !== over.id) {
+        const draggedTodo = sortedTodos.find((todo) => todo.id === active.id);
 
-      if (draggedTodo) {
-        // بررسی اینکه آیا وظیفه به ستون دیگری کشیده شده
-        const isDraggedToCompleted = completedTodos.some(
-          (todo) => todo.id === over.id
-        );
-        const isDraggedToIncomplete = incompleteTodos.some(
-          (todo) => todo.id === over.id
-        );
+        if (draggedTodo) {
+          console.log("🎯 Found dragged todo:", draggedTodo);
 
-        // اگر وظیفه تکمیل نشده به ستون تکمیل شده کشیده شده
-        if (!draggedTodo.completed && isDraggedToCompleted) {
-          try {
-            const updatedTodo = await TodoService.toggleTodoStatus(
-              draggedTodo.id,
-              true
+          // Check if dropped on a container (empty column)
+          if (over.id === "incomplete" || over.id === "completed") {
+            console.log("🎯 DROPPED ON CONTAINER:", over.id);
+            const targetCompleted = over.id === "completed";
+            console.log("🎯 Target completed status:", targetCompleted);
+            console.log(
+              "🎯 Current todo completed status:",
+              draggedTodo.completed
             );
-            dispatch(updateTodo(updatedTodo));
-          } catch (error) {
-            console.error("خطا در تغییر وضعیت:", error);
-          }
-        }
-        // اگر وظیفه تکمیل شده به ستون ناتمام کشیده شده
-        else if (draggedTodo.completed && isDraggedToIncomplete) {
-          try {
-            const updatedTodo = await TodoService.toggleTodoStatus(
-              draggedTodo.id,
-              false
-            );
-            dispatch(updateTodo(updatedTodo));
-          } catch (error) {
-            console.error("خطا در تغییر وضعیت:", error);
-          }
-        }
-        // تغییر ترتیب درون همان ستون
-        else {
-          const oldIndex = sortedTodos.findIndex(
-            (todo) => todo.id === active.id
-          );
-          const newIndex = sortedTodos.findIndex((todo) => todo.id === over.id);
 
-          if (oldIndex !== -1 && newIndex !== -1) {
-            dispatch(reorderTodos({startIndex: oldIndex, endIndex: newIndex}));
+            // Only update if the completion status is different
+            if (draggedTodo.completed !== targetCompleted) {
+              console.log(
+                "🔄 Changing completion status from",
+                draggedTodo.completed,
+                "to",
+                targetCompleted
+              );
+              try {
+                console.log("📞 Calling TodoService.toggleTodoStatus...");
+                const updatedTodo = await TodoService.toggleTodoStatus(
+                  draggedTodo.id,
+                  targetCompleted
+                );
+                console.log("✅ TodoService returned:", updatedTodo);
+                dispatch(updateTodo(updatedTodo));
+                console.log("✅ Dispatched updateTodo action");
+              } catch (error) {
+                console.error("❌ Error in toggleTodoStatus:", error);
+              }
+            } else {
+              console.log(
+                "ℹ️ No status change needed - already correct status"
+              );
+            }
+          } else {
+            // Find the target todo to determine the drop zone
+            const targetTodo = sortedTodos.find((todo) => todo.id === over.id);
+
+            if (targetTodo) {
+              console.log("🎯 Found target todo:", targetTodo);
+              // Check if dragged to different completion status
+              if (draggedTodo.completed !== targetTodo.completed) {
+                console.log(
+                  "🔄 Changing completion status from",
+                  draggedTodo.completed,
+                  "to",
+                  targetTodo.completed
+                );
+                try {
+                  console.log(
+                    "📞 Calling TodoService.toggleTodoStatus for target todo..."
+                  );
+                  const updatedTodo = await TodoService.toggleTodoStatus(
+                    draggedTodo.id,
+                    targetTodo.completed
+                  );
+                  console.log("✅ TodoService returned:", updatedTodo);
+                  dispatch(updateTodo(updatedTodo));
+                  console.log("✅ Dispatched updateTodo action");
+                } catch (error) {
+                  console.error("❌ Error in toggleTodoStatus:", error);
+                }
+              } else {
+                console.log("🔄 Reordering within same column");
+                // Reorder within the same column
+                const oldIndex = sortedTodos.findIndex(
+                  (todo) => todo.id === active.id
+                );
+                const newIndex = sortedTodos.findIndex(
+                  (todo) => todo.id === over.id
+                );
+
+                if (oldIndex !== -1 && newIndex !== -1) {
+                  console.log(
+                    "🔄 Reordering from index",
+                    oldIndex,
+                    "to",
+                    newIndex
+                  );
+                  dispatch(
+                    reorderTodos({ startIndex: oldIndex, endIndex: newIndex })
+                  );
+                }
+              }
+            } else {
+              console.log("❌ Target todo not found for ID:", over.id);
+            }
           }
+        } else {
+          console.log("❌ Dragged todo not found for ID:", active.id);
         }
+      } else {
+        console.log("❌ Invalid drop event - over:", over, "active:", active);
       }
+    },
+    [sortedTodos, dispatch]
+  );
+
+  // Register containers for drag and drop
+  useEffect(() => {
+    if (incompleteContainerRef.current) {
+      registerContainer("incomplete", incompleteContainerRef.current);
     }
-  };
+    if (completedContainerRef.current) {
+      registerContainer("completed", completedContainerRef.current);
+    }
+
+    // Set the drag end callback
+    setDragEndCallback(handleDragEnd);
+  }, [registerContainer, setDragEndCallback, handleDragEnd]);
 
   if (loading) {
     return (
@@ -114,7 +174,8 @@ export const TodoList: React.FC = () => {
             className="w-16 h-16 mx-auto"
             fill="none"
             stroke="currentColor"
-            viewBox="0 0 24 24">
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -141,87 +202,70 @@ export const TodoList: React.FC = () => {
 
   return (
     <div className="space-y-6 grid grid-cols-2 gap-6">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}>
-        {/* ستون اول: وظایف تکمیل نشده */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-          {/* header add task */}
-          {/* <div className="space-y-4">
+      {/* ستون اول: وظایف تکمیل نشده */}
+      <div
+        ref={incompleteContainerRef}
+        className="bg-white rounded-lg border border-gray-200 p-6 space-y-4"
+        data-container-id="incomplete"
+        style={{ pointerEvents: "auto" }}
+      >
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            {/* title */}
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+              <span className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span>
+              <span>وظایف در حال انجام ({incompleteTodos.length})</span>
+            </h3>
+
+            {/* add button */}
             <button
-              className="w-full h-full px-2 py-4 border rounded-sm text-2xl cursor-pointer hover:bg-primary-600 hover:text-white"
-              onClick={() => setShowDialog(!showDialog)}>
+              title="Add new task"
+              className="w-8 h-8 p-1 border rounded-sm text-xl cursor-pointer hover:bg-primary-600 hover:text-white flex justify-center items-center"
+              onClick={() => setShowDialog(!showDialog)}
+            >
               +
             </button>
-            {showDialog && <AddTodoForm />}
-          </div> */}
-
-          {/* <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <span className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span>
-            <span>وظایف در حال انجام ({incompleteTodos.length})</span>
-          </h3> */}
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              {/* title */}
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <span className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span>
-                <span>وظایف در حال انجام ({incompleteTodos.length})</span>
-              </h3>
-
-              {/* add button */}
-              <button
-                title="Add new task"
-                className="w-8 h-8 p-1 border rounded-sm text-xl cursor-pointer hover:bg-primary-600 hover:text-white flex justify-center items-center"
-                onClick={() => setShowDialog(!showDialog)}>
-                +
-              </button>
-            </div>
-            {showDialog && <AddTodoForm />}
           </div>
-
-          {incompleteTodos.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              همه وظایف تکمیل شده‌اند! 🎉
-            </div>
-          ) : (
-            <SortableContext
-              items={incompleteTodos.map((todo) => todo.id)}
-              strategy={verticalListSortingStrategy}>
-              <div className={`space-y-3 ${scrollColumn}`}>
-                {incompleteTodos.map((todo, index) => (
-                  <SortableTodoItem key={todo.id} todo={todo} index={index} />
-                ))}
-              </div>
-            </SortableContext>
-          )}
+          {showDialog && <AddTodoForm />}
         </div>
 
-        {/* ستون دوم: وظایف تکمیل شده */}
-        <div className={`bg-white rounded-lg border border-gray-200 p-6`}>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <span className="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
-            وظایف تکمیل شده ({completedTodos.length})
-          </h3>
+        {incompleteTodos.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            همه وظایف تکمیل شده‌اند! 🎉
+          </div>
+        ) : (
+          <div className={`space-y-3 ${scrollColumn}`}>
+            {incompleteTodos.map((todo, index) => (
+              <TodoItem key={todo.id} todo={todo} index={index} />
+            ))}
+          </div>
+        )}
+      </div>
 
-          {completedTodos.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              هنوز هیچ وظیفه‌ای تکمیل نشده است
-            </div>
-          ) : (
-            <SortableContext
-              items={completedTodos.map((todo) => todo.id)}
-              strategy={verticalListSortingStrategy}>
-              <div className={`space-y-3 ${scrollColumn}`}>
-                {completedTodos.map((todo, index) => (
-                  <SortableTodoItem key={todo.id} todo={todo} index={index} />
-                ))}
-              </div>
-            </SortableContext>
-          )}
-        </div>
-      </DndContext>
+      {/* ستون دوم: وظایف تکمیل شده */}
+      <div
+        ref={completedContainerRef}
+        className={`bg-white rounded-lg border border-gray-200 p-6`}
+        data-container-id="completed"
+        style={{ pointerEvents: "auto" }}
+      >
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <span className="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
+          وظایف تکمیل شده ({completedTodos.length})
+        </h3>
+
+        {completedTodos.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            هنوز هیچ وظیفه‌ای تکمیل نشده است
+          </div>
+        ) : (
+          <div className={`space-y-3 ${scrollColumn}`}>
+            {completedTodos.map((todo, index) => (
+              <TodoItem key={todo.id} todo={todo} index={index} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
