@@ -7,9 +7,8 @@ import { AddTodoForm } from "./AddTodoForm";
 import { useDragAndDrop, CustomDragEvent } from "@/plugin/Dnd-JS";
 import { Loading } from "@/components/Loading";
 import { ClipboardIcon } from "@/components/icons";
-import { Spinner } from "@/components/base/Spinner";
-import { useInfinitePagination } from "@/hooks/useInfinitePagination";
 import { useInitialTodoLoad } from "@/hooks/useTodoQuery";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 export const TodoList: React.FC = () => {
   const { toggleTodo } = useAppStore();
@@ -17,8 +16,7 @@ export const TodoList: React.FC = () => {
   const {
     todos: paginatedTodos,
     isLoading,
-    hasMore,
-    loadMore,
+    fetchNextPage,
   } = useInitialTodoLoad();
   const { filter, searchQuery, loading } = useAppSelector(
     (state) => state.todos
@@ -26,6 +24,8 @@ export const TodoList: React.FC = () => {
 
   const incompleteContainerRef = useRef<HTMLDivElement>(null);
   const completedContainerRef = useRef<HTMLDivElement>(null);
+  const incompleteScrollRef = useRef<HTMLDivElement | null>(null);
+  const completeScrollRef = useRef<HTMLDivElement | null>(null);
 
   const { registerContainer, setDragEndCallback } = useDragAndDrop();
 
@@ -36,18 +36,18 @@ export const TodoList: React.FC = () => {
   const incompleteTodos = sortedTodos.filter((todo) => !todo.completed);
   const completedTodos = sortedTodos.filter((todo) => todo.completed);
 
-  // Infinite scroll for incomplete todos
-  const { containerRef: incompleteContainerScrollRef } = useInfinitePagination({
-    hasMore,
-    isLoading,
-    loadMore,
+  const {
+    isIntersecting: isIntersectingIncomplete,
+    ref: incompleteContainerScrollRef,
+  } = useIntersectionObserver({
+    threshold: 0.5,
   });
 
-  // Infinite scroll for completed todos
-  const { containerRef: completedContainerScrollRef } = useInfinitePagination({
-    hasMore,
-    isLoading,
-    loadMore,
+  const {
+    isIntersecting: isIntersectingCompleted,
+    ref: completedContainerScrollRef,
+  } = useIntersectionObserver({
+    threshold: 0.5,
   });
 
   // Handle drag end callback function
@@ -97,7 +97,24 @@ export const TodoList: React.FC = () => {
     setDragEndCallback(handleDragEnd);
   }, [registerContainer, setDragEndCallback, handleDragEnd]);
 
-  if (loading) return <Loading />;
+  useEffect(() => {
+    if (isIntersectingIncomplete || isIntersectingCompleted) {
+      const scrollTopInCompleted = incompleteScrollRef.current?.scrollTop;
+      const scrollTopCompleted = completeScrollRef.current?.scrollTop;
+      fetchNextPage().then(() => {
+        setTimeout(() => {
+          if (incompleteScrollRef.current && isIntersectingIncomplete) {
+            incompleteScrollRef.current.scrollTop = scrollTopInCompleted ?? 0;
+          }
+          if (completeScrollRef.current && isIntersectingCompleted) {
+            completeScrollRef.current.scrollTop = scrollTopCompleted ?? 0;
+          }
+        }, 50);
+      });
+    }
+  }, [isIntersectingIncomplete, isIntersectingCompleted, fetchNextPage]);
+
+  if (loading || isLoading) return <Loading />;
 
   if (sortedTodos.length === 0) {
     return (
@@ -119,7 +136,7 @@ export const TodoList: React.FC = () => {
     );
   }
 
-  const scrollColumn = "overflow-y-auto max-h-[70vh]";
+  const scrollColumn = "overflow-y-auto min-h-[50vh] max-h-[70vh]";
 
   return (
     <div className="space-y-6 grid grid-cols-2 gap-6">
@@ -150,21 +167,23 @@ export const TodoList: React.FC = () => {
           {showDialog && <AddTodoForm />}
         </div>
 
-        {incompleteTodos.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            All tasks completed! 🎉
+        <div className={scrollColumn} ref={incompleteScrollRef}>
+          {incompleteTodos.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              All tasks completed! 🎉
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {incompleteTodos.map((todo, index) => (
+                <TodoItem key={todo.id} todo={todo} index={index} />
+              ))}
+            </div>
+          )}
+
+          <div ref={incompleteContainerScrollRef} className="min-h-10">
+            {isIntersectingIncomplete ? "" : <Loading />}
           </div>
-        ) : (
-          <div
-            ref={incompleteContainerScrollRef}
-            className={`space-y-3 ${scrollColumn}`}
-          >
-            {incompleteTodos.map((todo, index) => (
-              <TodoItem key={todo.id} todo={todo} index={index} />
-            ))}
-            {isLoading && <Spinner />}
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Second column: Completed tasks */}
@@ -179,21 +198,23 @@ export const TodoList: React.FC = () => {
           Completed Tasks ({completedTodos.length})
         </h3>
 
-        {completedTodos.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No tasks have been completed yet
+        <div className={scrollColumn} ref={completeScrollRef}>
+          {completedTodos.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No tasks have been completed yet
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {completedTodos.map((todo, index) => (
+                <TodoItem key={todo.id} todo={todo} index={index} />
+              ))}
+            </div>
+          )}
+
+          <div ref={completedContainerScrollRef} className="min-h-10">
+            {isIntersectingCompleted ? "" : <Loading />}
           </div>
-        ) : (
-          <div
-            ref={completedContainerScrollRef}
-            className={`space-y-3 ${scrollColumn}`}
-          >
-            {completedTodos.map((todo, index) => (
-              <TodoItem key={todo.id} todo={todo} index={index} />
-            ))}
-            {isLoading && <Spinner />}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

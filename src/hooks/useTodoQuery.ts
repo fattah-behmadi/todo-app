@@ -32,10 +32,7 @@ const useTodoQuery = () => {
         };
       },
       initialPageParam: 0,
-      getNextPageParam: (lastPage) => {
-        return lastPage.nextPage;
-      },
-      staleTime: 1000 * 60 * 5,
+      getNextPageParam: (lastPage) => lastPage.nextPage,
     });
 
   useEffect(() => {
@@ -45,19 +42,13 @@ const useTodoQuery = () => {
     }
   }, [data, dispatch]);
 
-  const loadMore = async () => {
-    if (hasNextPage && !isFetching) {
-      await fetchNextPage();
-    }
-  };
-
   return {
     todos: data?.pages.flatMap((page) => page.todos) || [],
     isLoading,
     isFetching,
-    hasMore: hasNextPage || false,
-    loadMore,
+    hasNextPage,
     error,
+    fetchNextPage,
   };
 };
 
